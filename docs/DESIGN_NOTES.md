@@ -136,6 +136,55 @@
 
 ---
 
+### 6. **Thumbnail Strip Centering** (Easy Fix)
+**Issue:** Thumbnail strip not vertically centered; selected photo not centered in the reel  
+**Current:** Strip positioned fixed at top 50%, but photos not centered  
+**Expected:**
+- Selected (next upcoming) photo centered vertically on screen
+- 2 photos above, 2 photos below visible in strip
+- Strip itself positioned right side, centered
+- Smooth scrolling so selected photo stays centered as user navigates
+
+**Files affected:** `src/components/Gallery/ThumbnailStrip.tsx`, `thumbnailStrip.module.css`  
+**Fix approach:** Adjust `.strip` positioning and scroll behavior to keep selected thumbnail centered
+
+---
+
+### 7. **Thumbnail Border Color** (Trivial)
+**Issue:** Selected thumbnail has gold/yellow border  
+**Expected:** White border instead  
+**Files affected:** `src/components/Gallery/thumbnailStrip.module.css` (.highlight class)  
+**Fix approach:** Change `border-color: var(--accent-gold)` to white; update box-shadow accordingly
+
+---
+
+### 8. **Missing Photos in Gallery** (Critical - Investigate)
+**Issue:** Only 4/6 photos rendering in gallery and navigation  
+**Current state:**
+- DSC02089.jpg ✓
+- DSC09181.jpg ✓
+- DSC09711-Edit-2.jpg ✓
+- PR1-2-Fireworks-1.jpg ✓
+- Successor.jpg ✗ (missing)
+- banger3.jpg ✗ (missing)
+
+**Possible causes:**
+1. File paths in projects.ts don't match actual file names
+2. File permissions issue on certain files
+3. Image files too large/corrupt
+4. Next.js image optimization failing silently
+
+**Investigation steps:**
+1. Verify files exist: `ls -la public/images/series-1/`
+2. Check browser console for 404 errors
+3. Check Next.js build logs for image processing errors
+4. Verify file permissions (some files show `rw-------` instead of `rw-r--r--`)
+5. Try accessing image URLs directly: `http://localhost:3000/_next/image?url=/images/series-1/Successor.jpg`
+
+**Files affected:** `public/images/series-1/`, `src/data/projects.ts`
+
+---
+
 ## Design Refinement Checklist
 
 ### Phase 1: Core Layering (Before Features 6-12)
