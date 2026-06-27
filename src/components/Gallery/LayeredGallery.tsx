@@ -227,27 +227,21 @@ export default function LayeredGallery() {
 
     let lastScrollY = window.scrollY;
 
-    const isGalleryFullyVisible = (): boolean => {
-      if (!containerRef.current) return false;
-      const rect = containerRef.current.getBoundingClientRect();
-      // Gallery is fully visible if top is at/above viewport top and bottom is at/below viewport bottom
-      return rect.top <= 0 && rect.bottom >= window.innerHeight;
-    };
-
     const isAtPageBottom = (): boolean => {
-      return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100;
+      // Lock only when user has scrolled near/to the bottom of the page
+      return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50;
     };
 
     const handleScroll = () => {
-      // Only lock scroll once gallery is fully visible or user is near bottom
-      const shouldLockScroll = isGalleryFullyVisible() || isAtPageBottom();
+      // Only lock scroll once user reaches the bottom of the page
+      const shouldLockScroll = isAtPageBottom();
       const isCeiling = currentIndexRef.current === firstImageIndexRef.current;
 
       if (shouldLockScroll && !isCeiling) {
         // Revert scroll to maintain position in feed
         window.scrollTo(0, lastScrollY);
       } else {
-        // Allow scroll (either gallery not fully visible, or at ceiling)
+        // Allow scroll (either not at bottom yet, or at ceiling)
         lastScrollY = window.scrollY;
       }
     };
