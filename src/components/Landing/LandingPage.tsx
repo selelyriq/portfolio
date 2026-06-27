@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { highlightImages } from "@/data/highlights";
 import { getImageUrl } from "@/utils/imageLoader";
 import styles from "./landingPage.module.css";
@@ -76,27 +76,31 @@ export default function LandingPage() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
             >
-              {/* Previous image (underneath) */}
-              {images.previous && (
-                <motion.div
-                  className={styles.imageWrapper}
-                  initial={{ opacity: 1 }}
-                  animate={{ opacity: 0 }}
-                  transition={{ duration: 3 }}
-                >
-                  <Image
-                    src={getImageUrl(images.previous)}
-                    alt="Highlight"
-                    width={250}
-                    height={350}
-                    className={styles.image}
-                    priority={false}
-                  />
-                </motion.div>
-              )}
+              <AnimatePresence>
+                {/* Previous image (underneath) */}
+                {images.previous && (
+                  <motion.div
+                    key={`prev-${images.previous}`}
+                    className={styles.imageWrapper}
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 3 }}
+                  >
+                    <Image
+                      src={getImageUrl(images.previous)}
+                      alt="Highlight"
+                      width={250}
+                      height={350}
+                      className={styles.image}
+                      priority={false}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Current image (on top, fading in) */}
               <motion.div
+                key={`curr-${images.current}`}
                 className={styles.imageWrapper}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
