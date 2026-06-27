@@ -17,6 +17,7 @@ export default function AlbumView({ project }: AlbumViewProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastScrollTimeRef = useRef(0);
 
   const images = project.images;
   const totalImages = images.length;
@@ -32,33 +33,32 @@ export default function AlbumView({ project }: AlbumViewProps) {
   const displayedImages = displayedIndices.map((idx) => images[idx]);
 
   useEffect(() => {
-    let lastScrollTime = 0;
     const scrollDelay = 800;
 
     const handleWheel = (e: WheelEvent) => {
       const now = Date.now();
-      if (now - lastScrollTime < scrollDelay) return;
+      if (now - lastScrollTimeRef.current < scrollDelay) return;
 
       if (e.deltaY > 0) {
         setCurrentIndex((prev) => (prev + 1) % totalImages);
-        lastScrollTime = now;
+        lastScrollTimeRef.current = now;
       } else if (e.deltaY < 0) {
         setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
-        lastScrollTime = now;
+        lastScrollTimeRef.current = now;
       }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (isLightboxOpen) return;
       const now = Date.now();
-      if (now - lastScrollTime < scrollDelay) return;
+      if (now - lastScrollTimeRef.current < scrollDelay) return;
 
       if (e.key === "ArrowDown") {
         setCurrentIndex((prev) => (prev + 1) % totalImages);
-        lastScrollTime = now;
+        lastScrollTimeRef.current = now;
       } else if (e.key === "ArrowUp") {
         setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
-        lastScrollTime = now;
+        lastScrollTimeRef.current = now;
       }
     };
 
