@@ -6,6 +6,7 @@ import Image from "next/image";
 import { portfolioData } from "@/data/projects";
 import { getImageUrl } from "@/utils/imageLoader";
 import { Project } from "@/types";
+import ThumbnailStrip from "./ThumbnailStrip";
 import styles from "./layeredGallery.module.css";
 
 interface FlatImage {
@@ -129,6 +130,14 @@ export default function LayeredGallery() {
           </motion.div>
         ))}
       </div>
+
+      {/* Thumbnail strip navigation */}
+      <ThumbnailStrip
+        images={allImages}
+        currentIndex={currentIndex}
+        onThumbnailClick={(index) => setCurrentIndex(index)}
+        totalImages={totalImages}
+      />
 
       {/* Image info */}
       <motion.div
