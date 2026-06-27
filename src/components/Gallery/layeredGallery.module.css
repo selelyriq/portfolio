@@ -1,0 +1,122 @@
+.container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 2rem 2rem;
+}
+
+.progressBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    var(--accent-gold),
+    var(--accent-gold-light)
+  );
+  transform-origin: left;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.cardStack {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 600px;
+  perspective: 1000px;
+}
+
+.card {
+  position: absolute;
+  width: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cardActive {
+  /* Active card styling handled by Framer Motion */
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--bg-secondary);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: 0 0 60px 20px rgba(212, 175, 55, 0.3),
+    inset 0 0 40px rgba(212, 175, 55, 0.1);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  background: radial-gradient(
+    circle at center,
+    rgba(212, 175, 55, 0.1) 0%,
+    transparent 70%
+  );
+}
+
+.info {
+  position: absolute;
+  bottom: 2rem;
+  left: 2rem;
+  color: var(--text-primary);
+  z-index: 10;
+}
+
+.projectTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+}
+
+.imageCount {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .container {
+    min-height: 100vh;
+    padding: 60px 1rem 2rem;
+  }
+
+  .cardStack {
+    height: 400px;
+  }
+
+  .info {
+    left: 1rem;
+    bottom: 1rem;
+  }
+
+  .projectTitle {
+    font-size: 1rem;
+  }
+}

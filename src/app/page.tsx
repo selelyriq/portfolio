@@ -1,11 +1,11 @@
 "use client";
 
-import Gallery from "@/components/Gallery/Gallery";
+import LayeredGallery from "@/components/Gallery/LayeredGallery";
 
 export default function Home() {
   return (
     <main>
-      <Gallery />
+      <LayeredGallery />
     </main>
   );
 }
