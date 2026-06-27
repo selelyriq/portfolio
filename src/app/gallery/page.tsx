@@ -40,6 +40,8 @@ export default function Gallery() {
                   width={600}
                   height={400}
                   className={styles.image}
+                  priority={index < 6}
+                  loading={index < 6 ? "eager" : "lazy"}
                 />
               </div>
             </button>
