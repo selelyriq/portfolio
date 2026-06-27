@@ -89,7 +89,7 @@ portfolio-site/
 - Commit: (from subagent)
 
 ## Task 4: Build LayeredGallery Component (Redesigned)
-**STATUS: ⏳ TODO**
+**STATUS: ✅ DONE**
 - Create infinite scroll gallery with layered card stack effect
 - Main image centered and bright, adjacent images darkened below
 - Implement scroll listener to update which image is "current"
@@ -100,13 +100,15 @@ portfolio-site/
 - Key CSS: backdrop-filter blur, box-shadow glow, opacity transitions, z-index layering
 
 ## Task 5: Build ThumbnailStrip Component
-**STATUS: ⏳ TODO**
+**STATUS: ✅ DONE**
 - Create right-side thumbnail navigation strip
 - Display thumbnails of upcoming images (vertical scroll)
 - Click thumbnail to jump to that image
-- Highlight current thumbnail
+- Highlight current thumbnail (gold border)
 - Responsive: hide/compact on mobile, maintain on desktop
 - Files: src/components/Gallery/ThumbnailStrip.tsx, thumbnailStrip.module.css
+- Integrated into LayeredGallery
+- Commit: `5e22efc` (in Task 4 commit, integrated in Task 5)
 
 ## Task 6: Build ImageLightbox Component
 **STATUS: ⏳ TODO**
