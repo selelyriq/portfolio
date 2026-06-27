@@ -264,11 +264,12 @@ export default function LayeredGallery() {
       {/* Glow backdrop — rendered outside cardStack so it's not constrained by card stacking context */}
       <div className={styles.glowBackdrop}>
         <Image
-          src={getImageUrl(displayedImages[1].src)}
+          src={getImageUrl(`blur-thumbs/${displayedImages[1].src.split('/').pop()}`)}
           alt=""
-          fill
+          width={80}
+          height={80}
           className={styles.glowBackdropImage}
-          sizes="(max-width: 768px) 90vw, 70vw"
+          loading="eager"
           aria-hidden="true"
         />
       </div>

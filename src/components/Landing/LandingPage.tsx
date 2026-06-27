@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { highlightImages } from "@/data/highlights";
-import { getImageUrl } from "@/utils/imageLoader";
+import { landingImages } from "@/data/landingImages";
 import ParticleField from "./ParticleField";
 import styles from "./landingPage.module.css";
 
@@ -18,26 +16,46 @@ interface CellImage {
   previous: string | null;
 }
 
-export default function LandingPage() {
-  const [mainGridImages, setMainGridImages] = useState<
-    Map<string, CellImage>
-  >(new Map());
-  const [middleColumnImages, setMiddleColumnImages] = useState<
-    Map<string, CellImage>
-  >(new Map());
-  const [blurColumnImages, setBlurColumnImages] = useState<
-    Map<string, CellImage>
-  >(new Map());
+const imgSrc = (src: string) => `/images/${src}`;
+const blurSrc = (src: string) => `/images/landing-blur/${src.split('/').pop()}`;
 
-  // Initialize grid cells with fixed 45-degree rotation
-  const gridCells: GridCell[] = Array.from({ length: 16 }, (_, i) => ({
+export default function LandingPage() {
+  const [ready, setReady] = useState(false);
+  const [mainGridImages, setMainGridImages] = useState<Map<string, CellImage>>(new Map());
+  const [middleColumnImages, setMiddleColumnImages] = useState<Map<string, CellImage>>(new Map());
+  const [blurColumnImages, setBlurColumnImages] = useState<Map<string, CellImage>>(new Map());
+
+  const gridCells: GridCell[] = Array.from({ length: 20 }, (_, i) => ({
     id: `cell-${i}`,
-    rotation: 45, // Fixed 45-degree rotation
+    rotation: 45,
   }));
 
+  // Preload all landing images before starting cycles
+  useEffect(() => {
+    let loaded = 0;
+    const total = landingImages.length * 2; // main + blur per image
+
+    const onLoad = () => {
+      loaded++;
+      if (loaded >= total) setReady(true);
+    };
+
+    landingImages.forEach(img => {
+      const main = new window.Image();
+      main.onload = onLoad;
+      main.onerror = onLoad;
+      main.src = imgSrc(img.src);
+
+      const blur = new window.Image();
+      blur.onload = onLoad;
+      blur.onerror = onLoad;
+      blur.src = blurSrc(img.src);
+    });
+  }, []);
+
   const getRandomUniqueImage = (excludeSrcs: Set<string>) => {
-    const available = highlightImages.filter(img => !excludeSrcs.has(img.src));
-    if (available.length === 0) return highlightImages[Math.floor(Math.random() * highlightImages.length)];
+    const available = landingImages.filter(img => !excludeSrcs.has(img.src));
+    if (available.length === 0) return landingImages[Math.floor(Math.random() * landingImages.length)];
     return available[Math.floor(Math.random() * available.length)];
   };
 
@@ -53,55 +71,24 @@ export default function LandingPage() {
     return images;
   };
 
-  const cycleLayerImages = (
-    prevImages: Map<string, CellImage>,
-    cellIndices: number[]
-  ) => {
-    const updated = new Map(prevImages);
-    const usedSrcs = new Set<string>();
-    cellIndices.forEach((index) => {
-      const cell = gridCells[index];
-      const oldImage = prevImages.get(cell.id);
-      const randomImage = getRandomUniqueImage(usedSrcs);
-      usedSrcs.add(randomImage.src);
-      updated.set(cell.id, {
-        current: randomImage.src,
-        previous: oldImage?.current || null,
-      });
-    });
-    return updated;
-  };
-
-  // Initialize main grid images
+  // Initialize all layers on mount
   useEffect(() => {
-    const allIndices = Array.from({ length: gridCells.length }, (_, i) => i);
-    setMainGridImages(initializeLayerImages(allIndices));
+    setMainGridImages(initializeLayerImages([0,1,2,3,4,5,6,7,8,9]));
+    setMiddleColumnImages(initializeLayerImages([1, 3, 5, 7]));
+    setBlurColumnImages(initializeLayerImages([1,3,5,7,9,11,13,15,17,19]));
   }, []);
 
-  // Initialize middle column images
+  // Cycle layers — only after preload is ready
   useEffect(() => {
-    setMiddleColumnImages(initializeLayerImages([1, 3, 5, 7, 9, 11, 13]));
-  }, []);
+    if (!ready) return;
 
-  // Initialize blur column images
-  useEffect(() => {
-    const blurIndices = gridCells
-      .map((_, i) => i)
-      .filter((i) => i % 2 === 1);
-    setBlurColumnImages(initializeLayerImages(blurIndices));
-  }, []);
-
-  // Cycle layers with randomized stagger per cell
-  useEffect(() => {
-    const baseInterval = 1200; // Base cycle interval in ms
+    const baseInterval = 4500;
     const staggerMap = new Map<string, number>();
-
-    // Generate random stagger offsets for each cell (0-200ms)
-    gridCells.forEach((cell) => {
-      staggerMap.set(cell.id, Math.random() * 200);
+    gridCells.forEach(cell => {
+      staggerMap.set(cell.id, Math.random() * baseInterval);
     });
 
-    const timers: NodeJS.Timeout[] = [];
+    const timers: ReturnType<typeof setTimeout>[] = [];
 
     const cycleLayerWithStagger = (
       cellIndices: number[],
@@ -113,12 +100,10 @@ export default function LandingPage() {
 
         const timer = setTimeout(() => {
           const cycleTimer = setInterval(() => {
-            setterFn((prev) => {
+            setterFn(prev => {
               const updated = new Map(prev);
               const oldImage = prev.get(cell.id);
-              const usedInLayer = new Set(
-                Array.from(prev.values()).map((img) => img.current)
-              );
+              const usedInLayer = new Set(Array.from(prev.values()).map(img => img.current));
               const randomImage = getRandomUniqueImage(usedInLayer);
               updated.set(cell.id, {
                 current: randomImage.src,
@@ -134,27 +119,21 @@ export default function LandingPage() {
       });
     };
 
-    // Apply cycling with stagger to each layer
-    const allIndices = Array.from({ length: gridCells.length }, (_, i) => i);
-    cycleLayerWithStagger(allIndices, setMainGridImages);
-    cycleLayerWithStagger([1, 3, 5, 7, 9, 11, 13], setMiddleColumnImages);
-    const blurIndices = gridCells
-      .map((_, i) => i)
-      .filter((i) => i % 2 === 1);
-    cycleLayerWithStagger(blurIndices, setBlurColumnImages);
+    cycleLayerWithStagger([0,1,2,3,4,5,6,7,8,9], setMainGridImages);
+    cycleLayerWithStagger([1, 3, 5, 7], setMiddleColumnImages);
+    cycleLayerWithStagger([1,3,5,7,9,11,13,15,17,19], setBlurColumnImages);
 
-    return () => timers.forEach((timer) => clearInterval(timer));
-  }, [gridCells]);
+    return () => timers.forEach(timer => clearInterval(timer));
+  }, [ready]);
 
   return (
     <div className={styles.landing}>
       <ParticleField />
-      {/* Small middle layer - only right column */}
+
+      {/* Small middle layer */}
       <div className={styles.gridMiddle}>
         {gridCells.map((cell, index) => {
-          // Only render every other right column cell (indices 1, 3, 5, 7, 9)
-          if (![1, 3, 5, 7, 9, 11, 13].includes(index)) return null;
-
+          if (![1, 3, 5, 7].includes(index)) return null;
           const images = middleColumnImages.get(cell.id);
           if (!images) return null;
 
@@ -165,42 +144,35 @@ export default function LandingPage() {
               style={{ rotate: 45 }}
             >
               <AnimatePresence>
-                {/* Previous image (underneath) */}
                 {images.previous && (
                   <motion.div
                     key={`middle-prev-${images.previous}`}
                     className={styles.imageWrapperMiddle}
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 3 }}
+                    transition={{ duration: 2 }}
                   >
-                    <Image
-                      src={getImageUrl(images.previous)}
-                      alt="Highlight middle"
-                      width={68}
-                      height={120}
+                    <img
+                      src={imgSrc(images.previous)}
+                      alt=""
+                      decoding="sync"
                       className={styles.imageMiddle}
-                      priority={false}
                     />
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              {/* Current image (on top, fading in) */}
               <motion.div
                 key={`middle-curr-${images.current}`}
                 className={styles.imageWrapperMiddle}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 3 }}
+                transition={{ duration: 2 }}
               >
-                <Image
-                  src={getImageUrl(images.current)}
-                  alt="Highlight middle"
-                  width={68}
-                  height={120}
+                <img
+                  src={imgSrc(images.current)}
+                  alt=""
+                  decoding="sync"
                   className={styles.imageMiddle}
-                  priority={false}
                 />
               </motion.div>
             </motion.div>
@@ -208,12 +180,10 @@ export default function LandingPage() {
         })}
       </div>
 
-      {/* Blurred glow layer - only right column */}
+      {/* Blurred glow layer */}
       <div className={styles.gridBlur}>
         {gridCells.map((cell, index) => {
-          // Render odd indices for blur column (1, 3, 5, 7, 9, 11, 13, 15)
-          if (index % 2 === 0) return null;
-
+          if (![1,3,5,7,9,11,13,15,17,19].includes(index)) return null;
           const images = blurColumnImages.get(cell.id);
           if (!images) return null;
 
@@ -224,42 +194,35 @@ export default function LandingPage() {
               style={{ rotate: 45 }}
             >
               <AnimatePresence>
-                {/* Previous image (underneath) */}
                 {images.previous && (
                   <motion.div
                     key={`blur-prev-${images.previous}`}
                     className={styles.imageWrapperBlur}
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 3 }}
+                    transition={{ duration: 2 }}
                   >
-                    <Image
-                      src={getImageUrl(images.previous)}
-                      alt="Highlight blur"
-                      width={202}
-                      height={360}
+                    <img
+                      src={blurSrc(images.previous)}
+                      alt=""
+                      decoding="sync"
                       className={styles.imageBlur}
-                      priority={false}
                     />
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              {/* Current image (on top, fading in) */}
               <motion.div
                 key={`blur-curr-${images.current}`}
                 className={styles.imageWrapperBlur}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 3 }}
+                transition={{ duration: 2 }}
               >
-                <Image
-                  src={getImageUrl(images.current)}
-                  alt="Highlight blur"
-                  width={202}
-                  height={360}
+                <img
+                  src={blurSrc(images.current)}
+                  alt=""
+                  decoding="sync"
                   className={styles.imageBlur}
-                  priority={false}
                 />
               </motion.div>
             </motion.div>
@@ -269,7 +232,7 @@ export default function LandingPage() {
 
       {/* Main grid */}
       <div className={styles.grid}>
-        {gridCells.map((cell) => {
+        {gridCells.slice(0, 10).map((cell) => {
           const images = mainGridImages.get(cell.id);
           if (!images) return null;
 
@@ -283,42 +246,35 @@ export default function LandingPage() {
               transition={{ duration: 0.8 }}
             >
               <AnimatePresence>
-                {/* Previous image (underneath) */}
                 {images.previous && (
                   <motion.div
                     key={`prev-${images.previous}`}
                     className={styles.imageWrapper}
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 3 }}
+                    transition={{ duration: 2 }}
                   >
-                    <Image
-                      src={getImageUrl(images.previous)}
-                      alt="Highlight"
-                      width={135}
-                      height={240}
+                    <img
+                      src={imgSrc(images.previous)}
+                      alt=""
+                      decoding="sync"
                       className={styles.image}
-                      priority={false}
                     />
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              {/* Current image (on top, fading in) */}
               <motion.div
                 key={`curr-${images.current}`}
                 className={styles.imageWrapper}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                transition={{ duration: 3 }}
+                transition={{ duration: 2 }}
               >
-                <Image
-                  src={getImageUrl(images.current)}
-                  alt="Highlight"
-                  width={135}
-                  height={240}
+                <img
+                  src={imgSrc(images.current)}
+                  alt=""
+                  decoding="sync"
                   className={styles.image}
-                  priority={false}
                 />
               </motion.div>
             </motion.div>

@@ -96,9 +96,7 @@
   pointer-events: none;
   z-index: 0;
   opacity: 0.35;
-  filter: blur(55px);
-  overflow: hidden;
-  border-radius: 0;
+  filter: blur(60px);
 }
 
 .glowBackdropImage {
