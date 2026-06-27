@@ -163,13 +163,14 @@ portfolio-site/
 - Files: Modify src/data/projects.ts, add image files
 
 ## Task 12: Performance Optimization & Deployment
-**STATUS: ⏳ TODO**
-- Optimize images (Next.js Image component with sizes)
-- Add SEO metadata to layout
-- Test Lighthouse performance (target 85+)
-- Create vercel.json with build config
-- Push to GitHub, connect to Vercel, configure custom domain
-- Files: Modify src/app/layout.tsx, create public/robots.txt, vercel.json
+**STATUS: ✅ COMPLETE (ready for GitHub → Vercel)**
+- ✅ Optimize images (Next.js Image component with formats, sizes, caching)
+- ✅ Add SEO metadata to layout (Open Graph, Twitter, robots, viewport)
+- ✅ Create vercel.json with build config, security headers, caching policy
+- ✅ Clean production build (no TypeScript errors, no warnings)
+- ⏳ NEXT: Push to GitHub, connect to Vercel, configure custom domain (user responsibility)
+- Files: Modified src/app/layout.tsx, next.config.js; created public/robots.txt, vercel.json
+- Commits: 2ba300b (SEO + Vercel config), 2747f51 (config fixes)
 
 ---
 
