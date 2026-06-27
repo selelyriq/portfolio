@@ -45,9 +45,6 @@ export default function LayeredGallery() {
   const allImages = flattenImages(portfolioData.projects);
   const totalImages = allImages.length;
 
-  // Derived progress (0..1) based on current position
-  const scrollProgress = totalImages > 1 ? currentIndex / (totalImages - 1) : 0;
-
   // Calculate which images to display (previous, current, next)
   const displayedIndices = [
     Math.max(0, currentIndex - 1),        // previous (clamp at start)
@@ -264,12 +261,6 @@ export default function LayeredGallery() {
 
   return (
     <div className={styles.container} ref={containerRef}>
-      {/* Progress bar */}
-      <motion.div
-        className={styles.progressBar}
-        style={{ scaleX: scrollProgress }}
-      />
-
       {/* Glow backdrop — rendered outside cardStack so it's not constrained by card stacking context */}
       <div className={styles.glowBackdrop}>
         <Image
