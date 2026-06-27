@@ -42,11 +42,11 @@ export default function LayeredGallery() {
   // Derived progress (0..1) based on current position
   const scrollProgress = totalImages > 0 ? currentIndex / totalImages : 0;
 
-  // Calculate which images to display (current + next 2)
+  // Calculate which images to display (previous, current, next)
   const displayedIndices = [
-    currentIndex,
-    (currentIndex + 1) % totalImages,
-    (currentIndex + 2) % totalImages,
+    (currentIndex - 1 + totalImages) % totalImages, // previous
+    currentIndex,                                    // current
+    (currentIndex + 1) % totalImages,               // next
   ];
 
   const displayedImages = displayedIndices.map((idx) => allImages[idx]);
@@ -108,18 +108,19 @@ export default function LayeredGallery() {
           <motion.div
             key={image.id}
             className={`${styles.card} ${
-              layerIndex === 0 ? styles.cardActive : ""
+              layerIndex === 1 ? styles.cardActive : ""
             }`}
-            onClick={() => layerIndex === 0 && setIsLightboxOpen(true)}
+            onClick={() => layerIndex === 1 && setIsLightboxOpen(true)}
             initial={{ opacity: 0, y: 20 }}
             animate={{
-              opacity: layerIndex === 0 ? 1 : layerIndex === 1 ? 0.4 : 0.2,
-              scale: layerIndex === 0 ? 1 : 0.7,
-              y: layerIndex === 0 ? 0 : layerIndex === 1 ? 60 : 120,
+              opacity: layerIndex === 1 ? 1 : 0.4,
+              scale: layerIndex === 1 ? 1 : 0.7,
+              y: layerIndex === 0 ? -80 : layerIndex === 1 ? 0 : 80,
+              zIndex: layerIndex === 1 ? 3 : layerIndex === 0 ? 1 : 2,
             }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            {layerIndex === 0 && (
+            {layerIndex === 1 && (
               <div className={styles.glowBackdrop}>
                 <Image
                   src={getImageUrl(image.src)}
@@ -137,11 +138,11 @@ export default function LayeredGallery() {
                 alt={image.alt}
                 width={image.width}
                 height={image.height}
-                priority={layerIndex === 0}
+                priority={layerIndex === 1}
                 className={styles.image}
                 sizes="(max-width: 768px) 90vw, 70vw"
               />
-              {layerIndex === 0 && <div className={styles.glow} />}
+              {layerIndex === 1 && <div className={styles.glow} />}
             </div>
           </motion.div>
         ))}
@@ -162,7 +163,7 @@ export default function LayeredGallery() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
       >
-        <p className={styles.projectTitle}>{displayedImages[0].projectTitle}</p>
+        <p className={styles.projectTitle}>{displayedImages[1].projectTitle}</p>
         <p className={styles.imageCount}>
           {currentIndex + 1} / {totalImages}
         </p>
@@ -171,7 +172,7 @@ export default function LayeredGallery() {
       {/* Full-screen lightbox */}
       <ImageLightbox
         isOpen={isLightboxOpen}
-        image={displayedImages[0] || null}
+        image={displayedImages[1] || null}
         onClose={() => setIsLightboxOpen(false)}
         onNext={() => {
           setIsLightboxOpen(false);
