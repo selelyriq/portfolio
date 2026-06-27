@@ -39,6 +39,7 @@ export default function LayeredGallery() {
   const touchStartRef = useRef<number | null>(null);
   const firstImageIndexRef = useRef(0);
   const ceilingExitAttemptsRef = useRef(0);
+  const lastCeilingAttemptTimeRef = useRef(0);
   useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
   const allImages = flattenImages(portfolioData.projects);
@@ -64,16 +65,26 @@ export default function LayeredGallery() {
       const atCeiling = currentIndexRef.current === firstImageIndexRef.current;
       const scrollingUp = e.deltaY < 0;
 
-      // At ceiling: require two consecutive up-scrolls to exit
+      // At ceiling: require two deliberate up-scrolls to exit (with debounce)
       if (atCeiling && scrollingUp) {
-        ceilingExitAttemptsRef.current++;
-        // First attempt: stay at ceiling, second attempt: allow scroll to landing
-        if (ceilingExitAttemptsRef.current === 1) {
+        const now = Date.now();
+        const timeSinceLastAttempt = now - lastCeilingAttemptTimeRef.current;
+        const debounceDelay = 300; // Wait 300ms between attempts to filter wheel momentum
+
+        if (ceilingExitAttemptsRef.current === 0) {
+          // First attempt
+          ceilingExitAttemptsRef.current = 1;
+          lastCeilingAttemptTimeRef.current = now;
+          e.preventDefault();
+          return;
+        } else if (ceilingExitAttemptsRef.current === 1 && timeSinceLastAttempt >= debounceDelay) {
+          // Second deliberate attempt (after debounce): allow scroll to landing
+          return;
+        } else {
+          // Still within debounce window: treat as momentum, don't exit
           e.preventDefault();
           return;
         }
-        // Second attempt or more: allow natural scroll
-        return;
       }
 
       // Reset exit attempts when scrolling down or away from ceiling
@@ -105,16 +116,26 @@ export default function LayeredGallery() {
         const atCeiling = currentIndexRef.current === firstImageIndexRef.current;
         const pressedUp = e.key === "ArrowUp";
 
-        // At ceiling: require two consecutive up-presses to exit
+        // At ceiling: require two deliberate up-presses to exit (with debounce)
         if (atCeiling && pressedUp) {
-          ceilingExitAttemptsRef.current++;
-          // First attempt: stay at ceiling, second attempt: allow action
-          if (ceilingExitAttemptsRef.current === 1) {
+          const now = Date.now();
+          const timeSinceLastAttempt = now - lastCeilingAttemptTimeRef.current;
+          const debounceDelay = 300;
+
+          if (ceilingExitAttemptsRef.current === 0) {
+            // First attempt
+            ceilingExitAttemptsRef.current = 1;
+            lastCeilingAttemptTimeRef.current = now;
+            e.preventDefault();
+            return;
+          } else if (ceilingExitAttemptsRef.current === 1 && timeSinceLastAttempt >= debounceDelay) {
+            // Second deliberate attempt: allow action
+            return;
+          } else {
+            // Still within debounce window
             e.preventDefault();
             return;
           }
-          // Second attempt or more: allow natural behavior
-          return;
         }
 
         // Reset exit attempts when pressing down or away from ceiling
@@ -157,16 +178,27 @@ export default function LayeredGallery() {
       const atCeiling = currentIndexRef.current === firstImageIndexRef.current;
       const swipingDown = delta < 0;
 
-      // At ceiling: require two consecutive down-swipes to exit
+      // At ceiling: require two deliberate down-swipes to exit (with debounce)
       if (atCeiling && swipingDown) {
-        ceilingExitAttemptsRef.current++;
-        touchStartRef.current = null;
-        // First attempt: stay at ceiling, second attempt: allow scroll
-        if (ceilingExitAttemptsRef.current === 1) {
+        const now = Date.now();
+        const timeSinceLastAttempt = now - lastCeilingAttemptTimeRef.current;
+        const debounceDelay = 300;
+
+        if (ceilingExitAttemptsRef.current === 0) {
+          // First attempt
+          ceilingExitAttemptsRef.current = 1;
+          lastCeilingAttemptTimeRef.current = now;
+          touchStartRef.current = null;
+          return;
+        } else if (ceilingExitAttemptsRef.current === 1 && timeSinceLastAttempt >= debounceDelay) {
+          // Second deliberate attempt: allow scroll to landing
+          touchStartRef.current = null;
+          return;
+        } else {
+          // Still within debounce window: block exit
+          touchStartRef.current = null;
           return;
         }
-        // Second attempt or more: allow natural scroll
-        return;
       }
 
       // Reset exit attempts when swiping up or away from ceiling
