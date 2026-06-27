@@ -14,7 +14,7 @@
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(4, 1fr);
   column-gap: 1rem;
-  row-gap: 0.55rem;
+  row-gap: 0.2rem;
   width: fit-content;
   margin: 0 auto;
   aspect-ratio: auto;
