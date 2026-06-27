@@ -17,10 +17,10 @@ export default function LandingPage() {
     Map<string, string>
   >(new Map());
 
-  // Initialize grid cells with rotation angles
+  // Initialize grid cells with fixed 45-degree rotation
   const gridCells: GridCell[] = Array.from({ length: 20 }, (_, i) => ({
     id: `cell-${i}`,
-    rotation: (Math.random() - 0.5) * 8, // Random rotation between -4 and 4 degrees
+    rotation: 45, // Fixed 45-degree rotation
   }));
 
   // Initialize with random images for each cell
