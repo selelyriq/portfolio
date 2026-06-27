@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { getImageUrl } from "@/utils/imageLoader";
@@ -24,26 +25,41 @@ export default function ThumbnailStrip({
   onThumbnailClick,
   totalImages,
 }: ThumbnailStripProps) {
-  // Show 5 thumbnails: 2 before, current, 2 after
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Hide strip until scrolled past landing (100vh) + transition (50vh)
+      const scrolled = window.scrollY;
+      const hideThreshold = window.innerHeight * 1.5; // 150vh
+      setIsVisible(scrolled > hideThreshold);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Show 5 thumbnails: 2 before, current, 2 after (clamped at boundaries)
   const thumbnailIndices = Array.from({ length: 5 }, (_, i) => {
     const offset = i - 2; // -2, -1, 0, 1, 2
-    return (currentIndex + offset + totalImages) % totalImages;
+    return Math.max(0, Math.min(totalImages - 1, currentIndex + offset));
   });
 
   return (
     <motion.div
       className={styles.strip}
       initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
+      animate={isVisible ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
       transition={{ duration: 0.6 }}
+      style={{ pointerEvents: isVisible ? "auto" : "none" }}
     >
-      {thumbnailIndices.map((index) => {
+      {thumbnailIndices.map((index, i) => {
         const image = images[index];
         const isCurrent = index === currentIndex;
 
         return (
           <motion.button
-            key={image.id}
+            key={`thumb-${i}-${image.id}`}
             className={`${styles.thumbnail} ${
               isCurrent ? styles.thumbnailCurrent : ""
             }`}

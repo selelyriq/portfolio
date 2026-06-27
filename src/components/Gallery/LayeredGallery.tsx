@@ -35,18 +35,21 @@ export default function LayeredGallery() {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const lastScrollTimeRef = useRef(0);
+  const currentIndexRef = useRef(currentIndex);
+  const touchStartRef = useRef<number | null>(null);
+  useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
   const allImages = flattenImages(portfolioData.projects);
   const totalImages = allImages.length;
 
   // Derived progress (0..1) based on current position
-  const scrollProgress = totalImages > 0 ? currentIndex / totalImages : 0;
+  const scrollProgress = totalImages > 1 ? currentIndex / (totalImages - 1) : 0;
 
   // Calculate which images to display (previous, current, next)
   const displayedIndices = [
-    (currentIndex - 1 + totalImages) % totalImages, // previous
-    currentIndex,                                    // current
-    (currentIndex + 1) % totalImages,               // next
+    Math.max(0, currentIndex - 1),        // previous (clamp at start)
+    currentIndex,                          // current
+    (currentIndex + 1) % totalImages,     // next (wrap at end)
   ];
 
   const displayedImages = displayedIndices.map((idx) => allImages[idx]);
@@ -56,40 +59,87 @@ export default function LayeredGallery() {
     const scrollDelay = 1200; // milliseconds between scroll events
 
     const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
       const now = Date.now();
       if (now - lastScrollTimeRef.current < scrollDelay) return;
 
+      // Ceiling: if at index 0 and scrolling up, allow native scroll to landing page
+      if (e.deltaY < 0 && currentIndexRef.current === 0) return;
+
+      e.preventDefault();
+
       if (e.deltaY > 0) {
-        // Scroll down
+        // Scroll down (wrap at end)
         setCurrentIndex((prev) => (prev + 1) % totalImages);
         lastScrollTimeRef.current = now;
       } else if (e.deltaY < 0) {
-        // Scroll up
-        setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
+        // Scroll up (clamp at start, no wrap)
+        setCurrentIndex((prev) => prev - 1);
         lastScrollTimeRef.current = now;
       }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        // Ceiling: if at index 0 and pressing ArrowUp, allow native behavior
+        if (e.key === "ArrowUp" && currentIndexRef.current === 0) return;
+
         const now = Date.now();
         if (now - lastScrollTimeRef.current < scrollDelay) return;
         if (e.key === "ArrowDown") {
           setCurrentIndex((prev) => (prev + 1) % totalImages);
         } else {
-          setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
+          setCurrentIndex((prev) => prev - 1);
         }
         lastScrollTimeRef.current = now;
       }
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartRef.current = e.touches[0]?.clientY ?? null;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (touchStartRef.current === null) return;
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current < scrollDelay) return;
+
+      const touchEndY = e.changedTouches[0]?.clientY;
+      if (touchEndY === undefined) return;
+
+      const delta = touchStartRef.current - touchEndY;
+      const minSwipe = 50; // Minimum swipe distance
+
+      if (Math.abs(delta) < minSwipe) return;
+
+      // Ceiling: if at index 0 and swiping down (delta < 0), allow native scroll
+      if (delta < 0 && currentIndexRef.current === 0) {
+        touchStartRef.current = null;
+        return;
+      }
+
+      if (delta > 0) {
+        // Swipe up: next image (downward = next)
+        setCurrentIndex((prev) => (prev + 1) % totalImages);
+        lastScrollTimeRef.current = now;
+      } else {
+        // Swipe down: previous image (ceiling clamp)
+        setCurrentIndex((prev) => prev - 1);
+        lastScrollTimeRef.current = now;
+      }
+
+      touchStartRef.current = null;
+    };
+
     const container = containerRef.current;
     container?.addEventListener("wheel", handleWheel, { passive: false });
+    container?.addEventListener("touchstart", handleTouchStart, { passive: true });
+    container?.addEventListener("touchend", handleTouchEnd, { passive: true });
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       container?.removeEventListener("wheel", handleWheel);
+      container?.removeEventListener("touchstart", handleTouchStart);
+      container?.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [totalImages]);
@@ -118,7 +168,7 @@ export default function LayeredGallery() {
       <div className={styles.cardStack}>
         {displayedImages.map((image, layerIndex) => (
           <motion.div
-            key={image.id}
+            key={`card-${layerIndex}-${image.id}`}
             className={`${styles.card} ${
               layerIndex === 1 ? styles.cardActive : ""
             }`}
@@ -179,9 +229,11 @@ export default function LayeredGallery() {
           setCurrentIndex((prev) => (prev + 1) % totalImages);
         }}
         onPrev={() => {
+          if (currentIndex === 0) return;
           setIsLightboxOpen(false);
-          setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
+          setCurrentIndex((prev) => prev - 1);
         }}
+        disablePrev={currentIndex === 0}
       />
     </div>
   );

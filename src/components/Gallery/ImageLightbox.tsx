@@ -19,6 +19,7 @@ interface ImageLightboxProps {
   onClose: () => void;
   onNext: () => void;
   onPrev: () => void;
+  disablePrev?: boolean;
 }
 
 export default function ImageLightbox({
@@ -27,6 +28,7 @@ export default function ImageLightbox({
   onClose,
   onNext,
   onPrev,
+  disablePrev = false,
 }: ImageLightboxProps) {
   const router = useRouter();
 
@@ -94,8 +96,10 @@ export default function ImageLightbox({
             <motion.button
               className={`${styles.navButton} ${styles.prevButton}`}
               onClick={onPrev}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              disabled={disablePrev}
+              whileHover={!disablePrev ? { scale: 1.1 } : undefined}
+              whileTap={!disablePrev ? { scale: 0.95 } : undefined}
+              style={disablePrev ? { opacity: 0.3, cursor: "default" } : undefined}
               aria-label="Previous image"
             >
               ←
