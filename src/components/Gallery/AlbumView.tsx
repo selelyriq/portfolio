@@ -33,9 +33,10 @@ export default function AlbumView({ project }: AlbumViewProps) {
   const displayedImages = displayedIndices.map((idx) => images[idx]);
 
   useEffect(() => {
-    const scrollDelay = 800;
+    const scrollDelay = 1200;
 
     const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
       const now = Date.now();
       if (now - lastScrollTimeRef.current < scrollDelay) return;
 
@@ -53,17 +54,18 @@ export default function AlbumView({ project }: AlbumViewProps) {
       const now = Date.now();
       if (now - lastScrollTimeRef.current < scrollDelay) return;
 
-      if (e.key === "ArrowDown") {
-        setCurrentIndex((prev) => (prev + 1) % totalImages);
-        lastScrollTimeRef.current = now;
-      } else if (e.key === "ArrowUp") {
-        setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        if (e.key === "ArrowDown") {
+          setCurrentIndex((prev) => (prev + 1) % totalImages);
+        } else {
+          setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
+        }
         lastScrollTimeRef.current = now;
       }
     };
 
     const container = containerRef.current;
-    container?.addEventListener("wheel", handleWheel, { passive: true });
+    container?.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {

@@ -1,7 +1,7 @@
 .container {
   position: relative;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   background-color: var(--bg-primary);
   overflow: hidden;
   display: flex;
@@ -171,7 +171,7 @@
 /* Mobile responsive */
 @media (max-width: 768px) {
   .container {
-    min-height: 100vh;
+    height: 100vh;
     padding: 60px 1rem 2rem;
   }
 

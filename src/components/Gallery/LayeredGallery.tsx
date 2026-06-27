@@ -34,6 +34,7 @@ export default function LayeredGallery() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastScrollTimeRef = useRef(0);
 
   const allImages = flattenImages(portfolioData.projects);
   const totalImages = allImages.length;
@@ -52,40 +53,39 @@ export default function LayeredGallery() {
 
   // Handle scroll wheel and keyboard navigation
   useEffect(() => {
-    let lastScrollTime = 0;
-    const scrollDelay = 800; // milliseconds between scroll events
+    const scrollDelay = 1200; // milliseconds between scroll events
 
     const handleWheel = (e: WheelEvent) => {
+      e.preventDefault();
       const now = Date.now();
-      if (now - lastScrollTime < scrollDelay) return;
+      if (now - lastScrollTimeRef.current < scrollDelay) return;
 
       if (e.deltaY > 0) {
         // Scroll down
         setCurrentIndex((prev) => (prev + 1) % totalImages);
-        lastScrollTime = now;
+        lastScrollTimeRef.current = now;
       } else if (e.deltaY < 0) {
         // Scroll up
         setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
-        lastScrollTime = now;
+        lastScrollTimeRef.current = now;
       }
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown") {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         const now = Date.now();
-        if (now - lastScrollTime < scrollDelay) return;
-        setCurrentIndex((prev) => (prev + 1) % totalImages);
-        lastScrollTime = now;
-      } else if (e.key === "ArrowUp") {
-        const now = Date.now();
-        if (now - lastScrollTime < scrollDelay) return;
-        setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
-        lastScrollTime = now;
+        if (now - lastScrollTimeRef.current < scrollDelay) return;
+        if (e.key === "ArrowDown") {
+          setCurrentIndex((prev) => (prev + 1) % totalImages);
+        } else {
+          setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
+        }
+        lastScrollTimeRef.current = now;
       }
     };
 
     const container = containerRef.current;
-    container?.addEventListener("wheel", handleWheel, { passive: true });
+    container?.addEventListener("wheel", handleWheel, { passive: false });
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
