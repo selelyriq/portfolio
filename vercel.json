@@ -9,9 +9,6 @@
       "maxDuration": 30
     }
   },
-  "env": {
-    "NEXT_PUBLIC_SITE_URL": "@next_public_site_url"
-  },
   "headers": [
     {
       "source": "/public/:path*",
