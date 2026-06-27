@@ -18,7 +18,7 @@ export const portfolioData: PortfolioData = {
         },
         {
           id: "photo-2",
-          src: "series-1/DSC02089.jpg",
+          src: "series-1/DSC09711-Edit-2.jpg",
           alt: "Photo 2",
           width: 1920,
           height: 1280,
@@ -32,14 +32,14 @@ export const portfolioData: PortfolioData = {
         },
         {
           id: "photo-4",
-          src: "series-1/DSC09711-Edit-2.jpg",
+          src: "series-1/IMG_0100.jpg",
           alt: "Photo 4",
           width: 1920,
           height: 1280,
         },
         {
           id: "photo-5",
-          src: "series-1/PR1-2-Fireworks-1.jpg",
+          src: "series-1/IMG_0099.jpg",
           alt: "Photo 5",
           width: 1920,
           height: 1280,

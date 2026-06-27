@@ -7,6 +7,7 @@ import { portfolioData } from "@/data/projects";
 import { getImageUrl } from "@/utils/imageLoader";
 import { Project } from "@/types";
 import ThumbnailStrip from "./ThumbnailStrip";
+import ImageLightbox from "./ImageLightbox";
 import styles from "./layeredGallery.module.css";
 
 interface FlatImage {
@@ -31,6 +32,7 @@ function flattenImages(projects: Project[]): FlatImage[] {
 
 export default function LayeredGallery() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const allImages = flattenImages(portfolioData.projects);
@@ -108,10 +110,12 @@ export default function LayeredGallery() {
             className={`${styles.card} ${
               layerIndex === 0 ? styles.cardActive : ""
             }`}
+            onClick={() => layerIndex === 0 && setIsLightboxOpen(true)}
             initial={{ opacity: 0, y: 20 }}
             animate={{
-              opacity: layerIndex === 0 ? 1 : 0.4 - layerIndex * 0.15,
-              y: layerIndex * 40,
+              opacity: layerIndex === 0 ? 1 : layerIndex === 1 ? 0.4 : 0.2,
+              scale: layerIndex === 0 ? 1 : 0.7,
+              y: layerIndex === 0 ? 0 : layerIndex === 1 ? 60 : 120,
             }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
@@ -151,6 +155,21 @@ export default function LayeredGallery() {
           {currentIndex + 1} / {totalImages}
         </p>
       </motion.div>
+
+      {/* Full-screen lightbox */}
+      <ImageLightbox
+        isOpen={isLightboxOpen}
+        image={displayedImages[0] || null}
+        onClose={() => setIsLightboxOpen(false)}
+        onNext={() => {
+          setIsLightboxOpen(false);
+          setCurrentIndex((prev) => (prev + 1) % totalImages);
+        }}
+        onPrev={() => {
+          setIsLightboxOpen(false);
+          setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
+        }}
+      />
     </div>
   );
 }

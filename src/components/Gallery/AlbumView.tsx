@@ -105,8 +105,9 @@ export default function AlbumView({ project }: AlbumViewProps) {
             onClick={() => layerIndex === 0 && setIsLightboxOpen(true)}
             initial={{ opacity: 0, y: 20 }}
             animate={{
-              opacity: layerIndex === 0 ? 1 : 0.4 - layerIndex * 0.15,
-              y: layerIndex * 40,
+              opacity: layerIndex === 0 ? 1 : layerIndex === 1 ? 0.4 : 0.2,
+              scale: layerIndex === 0 ? 1 : 0.7,
+              y: layerIndex === 0 ? 0 : layerIndex === 1 ? 60 : 120,
             }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
