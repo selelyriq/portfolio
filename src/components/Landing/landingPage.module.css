@@ -31,6 +31,11 @@
   transform-style: preserve-3d;
 }
 
+/* Offset right column (even items) downwards */
+.cell:nth-child(2n) {
+  transform: translateY(150px);
+}
+
 .imageWrapper {
   position: absolute;
   inset: 0;
