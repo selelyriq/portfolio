@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Photography Portfolio
+
+A unique, immersive photography portfolio website built with Next.js, featuring smooth scroll interactions, dark minimal aesthetic with gold accents, and full image optimization for Vercel deployment.
+
+## Project Status
+
+**Implementation Plan:** See [`docs/superpowers/plans/2026-06-26-photography-portfolio.md`](docs/superpowers/plans/2026-06-26-photography-portfolio.md)
+
+### Completed (Session 1 - 2026-06-26)
+- ✅ Task 1: Next.js 14 boilerplate with dark theme + gold accents
+- ✅ Task 2: Project/image data structure & TypeScript types
+- ✅ Task 3: Gallery component with scroll tracking
+
+### In Progress
+- ⏳ Task 4: ProjectSection component
+- ⏳ Task 5: ImageCard component with hover animations
+- ⏳ Task 6-12: Scroll effects, optimization, header, deployment
 
 ## Getting Started
 
-First, run the development server:
-
+### Development
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the portfolio in development.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build & Deploy
+```bash
+npm run build
+npm start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Deploy to Vercel by pushing to GitHub and connecting the repo to Vercel. See Task 12 in the implementation plan.
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/              # Next.js App Router pages
+├── components/       # React components (Gallery, ProjectSection, ImageCard, Header)
+├── data/            # Project metadata and image data
+├── types/           # TypeScript type definitions
+└── utils/           # Utility functions (image loading, etc)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+public/
+└── images/          # Project images organized by series
+    ├── series-1/
+    ├── series-2/
+    └── ...
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tech Stack
 
-## Deploy on Vercel
+- **Framework:** Next.js 14+ with TypeScript
+- **Styling:** CSS Modules + CSS Variables
+- **Animations:** Framer Motion
+- **Image Optimization:** Next.js Image component
+- **Hosting:** Vercel
+- **Build Tool:** npm
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Key Features (Planned)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Organized image galleries by project/series
+- Smooth infinite scroll with parallax effects
+- Hover animations on images with gold accents
+- Dark minimal design aesthetic
+- Fully optimized images for web
+- Mobile-responsive layout
+- SEO-friendly
+
+## Next Steps
+
+1. Continue implementation with Task 4 (ProjectSection component)
+2. Build out remaining components and features
+3. Add actual project images to `/public/images/`
+4. Deploy to Vercel
+
+See the full implementation plan for detailed task breakdown.
