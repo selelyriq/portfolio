@@ -113,7 +113,18 @@ export default function AlbumView({ project }: AlbumViewProps) {
             }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            {layerIndex === 0 && <div className={styles.glowBackdrop} />}
+            {layerIndex === 0 && (
+              <div className={styles.glowBackdrop}>
+                <Image
+                  src={getImageUrl(image.src)}
+                  alt=""
+                  fill
+                  className={styles.glowBackdropImage}
+                  sizes="(max-width: 768px) 90vw, 70vw"
+                  aria-hidden="true"
+                />
+              </div>
+            )}
             <div className={styles.imageWrapper}>
               <Image
                 src={getImageUrl(image.src)}
