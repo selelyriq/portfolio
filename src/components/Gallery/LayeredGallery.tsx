@@ -38,6 +38,7 @@ export default function LayeredGallery() {
   const currentIndexRef = useRef(currentIndex);
   const touchStartRef = useRef<number | null>(null);
   const firstImageIndexRef = useRef(0);
+  const ceilingExitAttemptsRef = useRef(0);
   useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
   const allImages = flattenImages(portfolioData.projects);
@@ -60,19 +61,33 @@ export default function LayeredGallery() {
     const scrollDelay = 1200; // milliseconds between scroll events
 
     const handleWheel = (e: WheelEvent) => {
-      // Ceiling: if at first image and scrolling up, allow native scroll to landing page
-      const isCeiling = e.deltaY < 0 && currentIndexRef.current === firstImageIndexRef.current;
+      const atCeiling = currentIndexRef.current === firstImageIndexRef.current;
+      const scrollingUp = e.deltaY < 0;
 
-      // Always lock window while in feed (except at ceiling scrolling up)
-      if (!isCeiling) {
+      // At ceiling: require two consecutive up-scrolls to exit
+      if (atCeiling && scrollingUp) {
+        ceilingExitAttemptsRef.current++;
+        // First attempt: stay at ceiling, second attempt: allow scroll to landing
+        if (ceilingExitAttemptsRef.current === 1) {
+          e.preventDefault();
+          return;
+        }
+        // Second attempt or more: allow natural scroll
+        return;
+      }
+
+      // Reset exit attempts when scrolling down or away from ceiling
+      if (scrollingUp === false) {
+        ceilingExitAttemptsRef.current = 0;
+      }
+
+      // Lock window while in feed
+      if (atCeiling === false) {
         e.preventDefault();
       }
 
       const now = Date.now();
       if (now - lastScrollTimeRef.current < scrollDelay) return;
-
-      // If at ceiling and scrolling up, allow page scroll without changing image
-      if (isCeiling) return;
 
       if (e.deltaY > 0) {
         // Scroll down (wrap at end)
@@ -87,18 +102,30 @@ export default function LayeredGallery() {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        const isCeiling = e.key === "ArrowUp" && currentIndexRef.current === firstImageIndexRef.current;
+        const atCeiling = currentIndexRef.current === firstImageIndexRef.current;
+        const pressedUp = e.key === "ArrowUp";
 
-        // Lock keys while in feed (except at ceiling with ArrowUp)
-        if (!isCeiling) {
-          e.preventDefault();
+        // At ceiling: require two consecutive up-presses to exit
+        if (atCeiling && pressedUp) {
+          ceilingExitAttemptsRef.current++;
+          // First attempt: stay at ceiling, second attempt: allow action
+          if (ceilingExitAttemptsRef.current === 1) {
+            e.preventDefault();
+            return;
+          }
+          // Second attempt or more: allow natural behavior
+          return;
         }
+
+        // Reset exit attempts when pressing down or away from ceiling
+        if (pressedUp === false) {
+          ceilingExitAttemptsRef.current = 0;
+        }
+
+        e.preventDefault();
 
         const now = Date.now();
         if (now - lastScrollTimeRef.current < scrollDelay) return;
-
-        // If at ceiling and pressing ArrowUp, allow native behavior without changing image
-        if (isCeiling) return;
 
         if (e.key === "ArrowDown") {
           setCurrentIndex((prev) => (prev + 1) % totalImages);
@@ -127,8 +154,25 @@ export default function LayeredGallery() {
         return;
       }
 
-      // Ceiling: if at first image and swiping down (delta < 0), allow native scroll
-      const isCeiling = delta < 0 && currentIndexRef.current === firstImageIndexRef.current;
+      const atCeiling = currentIndexRef.current === firstImageIndexRef.current;
+      const swipingDown = delta < 0;
+
+      // At ceiling: require two consecutive down-swipes to exit
+      if (atCeiling && swipingDown) {
+        ceilingExitAttemptsRef.current++;
+        touchStartRef.current = null;
+        // First attempt: stay at ceiling, second attempt: allow scroll
+        if (ceilingExitAttemptsRef.current === 1) {
+          return;
+        }
+        // Second attempt or more: allow natural scroll
+        return;
+      }
+
+      // Reset exit attempts when swiping up or away from ceiling
+      if (swipingDown === false) {
+        ceilingExitAttemptsRef.current = 0;
+      }
 
       const now = Date.now();
       if (now - lastScrollTimeRef.current < scrollDelay) {
@@ -136,18 +180,12 @@ export default function LayeredGallery() {
         return;
       }
 
-      // If at ceiling and swiping down, allow page scroll without changing image
-      if (isCeiling) {
-        touchStartRef.current = null;
-        return;
-      }
-
       if (delta > 0) {
-        // Swipe up: next image (downward = next)
+        // Swipe up: next image
         setCurrentIndex((prev) => (prev + 1) % totalImages);
         lastScrollTimeRef.current = now;
       } else {
-        // Swipe down: previous image (ceiling clamp)
+        // Swipe down: previous image
         setCurrentIndex((prev) => prev - 1);
         lastScrollTimeRef.current = now;
       }
