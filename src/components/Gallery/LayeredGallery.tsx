@@ -157,14 +157,27 @@ export default function LayeredGallery() {
 
     let lastScrollY = window.scrollY;
 
+    const isGalleryFullyVisible = (): boolean => {
+      if (!containerRef.current) return false;
+      const rect = containerRef.current.getBoundingClientRect();
+      // Gallery is fully visible if top is at/above viewport top and bottom is at/below viewport bottom
+      return rect.top <= 0 && rect.bottom >= window.innerHeight;
+    };
+
+    const isAtPageBottom = (): boolean => {
+      return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 100;
+    };
+
     const handleScroll = () => {
-      // Lock scroll while in gallery (except at ceiling scrolling up)
+      // Only lock scroll once gallery is fully visible or user is near bottom
+      const shouldLockScroll = isGalleryFullyVisible() || isAtPageBottom();
       const isCeiling = currentIndexRef.current === firstImageIndexRef.current;
-      if (!isCeiling) {
+
+      if (shouldLockScroll && !isCeiling) {
         // Revert scroll to maintain position in feed
         window.scrollTo(0, lastScrollY);
       } else {
-        // At ceiling, allow scroll and track new position
+        // Allow scroll (either gallery not fully visible, or at ceiling)
         lastScrollY = window.scrollY;
       }
     };
