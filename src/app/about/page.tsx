@@ -6,6 +6,9 @@ import styles from "./about.module.css";
 export default function About() {
   return (
     <main className={styles.main}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>About</h1>
+      </div>
       <div className={styles.container}>
         {/* Photo section */}
         <div className={styles.photoSection}>
@@ -22,7 +25,6 @@ export default function About() {
 
         {/* About text section */}
         <div className={styles.textSection}>
-          <h1 className={styles.title}>About</h1>
           <div className={styles.content}>
             <p>Your about content goes here.</p>
           </div>

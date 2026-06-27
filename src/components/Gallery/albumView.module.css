@@ -1,45 +1,18 @@
-.container {
-  position: relative;
+.main {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   background-color: var(--bg-primary);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 2rem 2rem;
+  padding-top: 64px;
 }
 
-.progressBar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    to right,
-    var(--text-primary),
-    var(--text-secondary)
-  );
-  transform-origin: left;
-  z-index: 1000;
-  pointer-events: none;
-}
-
-/* Header */
 .header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem 3rem;
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 0.75rem 2rem;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
 }
 
 .backButton {
@@ -47,48 +20,52 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+  color: var(--text-primary);
   font-size: 0.875rem;
   letter-spacing: 0.05em;
   text-decoration: none;
-  padding: 0.4rem 0.75rem;
-  border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  background: none;
   transition: all 0.2s ease;
+  margin-bottom: 2rem;
 }
 
 .backButton:hover {
-  color: var(--text-primary, #fff);
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  color: var(--text-secondary);
+  background: none;
+  border-color: transparent;
 }
 
 .albumMeta {
   display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  overflow: hidden;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  overflow: visible;
+  width: 100%;
 }
 
 .albumTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--text-primary, #fff);
+  font-size: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  text-transform: capitalize;
 }
 
 .albumDescription {
-  font-size: 0.8rem;
-  color: var(--text-secondary, rgba(255, 255, 255, 0.5));
-  margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin: 0.5rem 0 0;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .albumYear {
@@ -98,41 +75,54 @@
   flex-shrink: 0;
 }
 
-/* Card stack — identical to LayeredGallery */
-.cardStack {
-  position: relative;
-  width: 40vw;
-  max-width: 480px;
-  aspect-ratio: 3 / 4;
-  flex-shrink: 0;
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
 }
 
-.card {
-  position: absolute;
-  inset: 0;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.item {
+  aspect-ratio: 5 / 7;
+  overflow: visible;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  padding: 0;
   cursor: pointer;
-  z-index: 3;
+  transition: opacity 0.2s ease;
+  position: relative;
 }
 
-.card:nth-child(2) {
-  z-index: 2;
+.item:hover .glowBackground {
+  opacity: 1;
 }
 
-.card:nth-child(3) {
-  z-index: 1;
+.glowBackground {
+  position: absolute;
+  inset: -80px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 0;
 }
 
-.cardActive {
-  /* Active card is first child — z-index: 3 from .card applies */
+.glowImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(50px);
+  transform: scale(0.85);
 }
 
 .imageWrapper {
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  border-radius: 8px;
-  background-color: var(--bg-secondary);
   z-index: 1;
 }
 
@@ -141,10 +131,79 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.3s ease;
 }
-/* Blurred image backdrop */
-.glowBackdrop {
+
+.item:hover .image {
+  transform: scale(1.02);
+}
+
+/* Fullscreen lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.lightboxContent {
+  position: relative;
+  width: 45vw;
+  height: 45vh;
+  max-width: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightboxImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.lightboxNavButton {
   position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 3rem;
+  cursor: pointer;
+  padding: 1rem 1.5rem;
+  transition: color 0.2s ease;
+  border-radius: 4px;
+}
+
+.lightboxNavButton:hover {
+  color: var(--text-secondary);
+}
+
+.prevButton {
+  left: -100px;
+}
+
+.nextButton {
+  right: -100px;
+}
+
+.counter {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  white-space: nowrap;
+  z-index: 1001;
+}
+
+/* Glow backdrop - only visible in fullscreen */
+.lightboxGlowBackdrop {
+  position: fixed;
   left: 50%;
   top: 50%;
   width: 600px;
@@ -152,9 +211,9 @@
   margin-left: -300px;
   margin-top: -300px;
   pointer-events: none;
-  z-index: 0;
+  z-index: 999;
   opacity: 0.35;
-  filter: blur(55px);
+  filter: blur(50px);
   overflow: hidden;
 }
 
@@ -162,37 +221,13 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(0.85);
 }
 
-.glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Info bar */
-.info {
-  position: absolute;
-  bottom: 2rem;
-  left: 2rem;
-  color: var(--text-primary);
-  z-index: 10;
-}
-
-.imageCount {
-  font-size: 0.875rem;
-  color: var(--text-secondary, rgba(255, 255, 255, 0.5));
-  letter-spacing: 0.1em;
-  margin: 0;
-}
-
-/* Mobile responsive */
+/* Responsive */
 @media (max-width: 768px) {
   .container {
-    height: 100vh;
-    padding: 60px 1rem 2rem;
+    padding: 2rem 1rem;
   }
 
   .header {
@@ -204,12 +239,30 @@
     display: none;
   }
 
-  .cardStack {
-    width: 85vw;
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
 
-  .info {
+  .lightboxNavButton {
+    font-size: 2rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .prevButton {
     left: 1rem;
+  }
+
+  .nextButton {
+    right: 1rem;
+  }
+
+  .closeButton {
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .counter {
     bottom: 1rem;
   }
 }

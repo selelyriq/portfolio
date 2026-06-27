@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { Project } from "@/types";
 import { getImageUrl } from "@/utils/imageLoader";
-import ImageLightbox from "./ImageLightbox";
 import styles from "./albumView.module.css";
 
 interface AlbumViewProps {
@@ -14,78 +13,24 @@ interface AlbumViewProps {
 }
 
 export default function AlbumView({ project }: AlbumViewProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const lastScrollTimeRef = useRef(0);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
-  const images = project.images;
-  const totalImages = images.length;
+  const handlePrevious = () => {
+    if (selectedIndex === null) return;
+    setSelectedIndex(selectedIndex === 0 ? project.images.length - 1 : selectedIndex - 1);
+  };
 
-  const scrollProgress = totalImages > 0 ? currentIndex / totalImages : 0;
-
-  const displayedIndices = [
-    (currentIndex - 1 + totalImages) % totalImages, // previous
-    currentIndex,                                    // current
-    (currentIndex + 1) % totalImages,               // next
-  ];
-
-  const displayedImages = displayedIndices.map((idx) => images[idx]);
-
-  useEffect(() => {
-    const scrollDelay = 1200;
-
-    const handleWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      const now = Date.now();
-      if (now - lastScrollTimeRef.current < scrollDelay) return;
-
-      if (e.deltaY > 0) {
-        setCurrentIndex((prev) => (prev + 1) % totalImages);
-        lastScrollTimeRef.current = now;
-      } else if (e.deltaY < 0) {
-        setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
-        lastScrollTimeRef.current = now;
-      }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (isLightboxOpen) return;
-      const now = Date.now();
-      if (now - lastScrollTimeRef.current < scrollDelay) return;
-
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        if (e.key === "ArrowDown") {
-          setCurrentIndex((prev) => (prev + 1) % totalImages);
-        } else {
-          setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
-        }
-        lastScrollTimeRef.current = now;
-      }
-    };
-
-    const container = containerRef.current;
-    container?.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      container?.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [totalImages, isLightboxOpen]);
+  const handleNext = () => {
+    if (selectedIndex === null) return;
+    setSelectedIndex(selectedIndex === project.images.length - 1 ? 0 : selectedIndex + 1);
+  };
 
   return (
-    <div className={styles.container} ref={containerRef}>
-      {/* Progress bar */}
-      <motion.div
-        className={styles.progressBar}
-        style={{ scaleX: scrollProgress }}
-      />
-
+    <main className={styles.main}>
       {/* Header */}
       <div className={styles.header}>
-        <Link href="/" className={styles.backButton}>
-          ← Back
+        <Link href="/projects" className={styles.backButton}>
+          ← Back to Albums
         </Link>
         <div className={styles.albumMeta}>
           <h1 className={styles.albumTitle}>{project.title}</h1>
@@ -98,74 +43,108 @@ export default function AlbumView({ project }: AlbumViewProps) {
         </div>
       </div>
 
-      {/* Glow backdrop */}
-      <div className={styles.glowBackdrop}>
-        <Image
-          src={getImageUrl(displayedImages[1].src)}
-          alt=""
-          width={600}
-          height={600}
-          className={styles.glowBackdropImage}
-          aria-hidden="true"
-        />
+      {/* Image grid */}
+      <div className={styles.container}>
+        <div className={styles.grid}>
+          {project.images.map((image, index) => (
+            <button
+              key={image.id || index}
+              className={styles.item}
+              type="button"
+              onClick={() => setSelectedIndex(index)}
+              aria-label={`View ${image.alt || `image ${index + 1}`}`}
+            >
+              {/* Blurred background glow */}
+              <div className={styles.glowBackground}>
+                <Image
+                  src={getImageUrl(image.src)}
+                  alt=""
+                  width={600}
+                  height={450}
+                  className={styles.glowImage}
+                  aria-hidden="true"
+                />
+              </div>
+              {/* Main image */}
+              <div className={styles.imageWrapper}>
+                <Image
+                  src={getImageUrl(image.src)}
+                  alt={image.alt || `Album image ${index + 1}`}
+                  width={600}
+                  height={450}
+                  className={styles.image}
+                />
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* Main gallery cards */}
-      <div className={styles.cardStack}>
-        {displayedImages.map((image, layerIndex) => (
-          <motion.div
-            key={`${image.id}-${layerIndex}`}
-            className={[styles.card, layerIndex === 1 ? styles.cardActive : ""].filter(Boolean).join(" ")}
-            onClick={() => layerIndex === 1 && setIsLightboxOpen(true)}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{
-              opacity: layerIndex === 1 ? 1 : 0.25,
-              scale: layerIndex === 1 ? 1 : 0.85,
-              y: layerIndex === 0 ? -90 : layerIndex === 1 ? 0 : 90,
-              zIndex: layerIndex === 1 ? 3 : layerIndex === 0 ? 1 : 2,
-            }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <div className={styles.imageWrapper}>
+      {/* Fullscreen lightbox with glow backdrop */}
+      <AnimatePresence>
+        {selectedIndex !== null && (
+          <>
+            {/* Glow backdrop - only in fullscreen */}
+            <div className={styles.lightboxGlowBackdrop}>
               <Image
-                src={getImageUrl(image.src)}
-                alt={image.alt}
-                width={image.width}
-                height={image.height}
-                priority={layerIndex === 1}
-                className={styles.image}
-                sizes="(max-width: 768px) 90vw, 70vw"
+                src={getImageUrl(project.images[selectedIndex].src)}
+                alt=""
+                width={600}
+                height={600}
+                className={styles.glowBackdropImage}
+                aria-hidden="true"
               />
-              {layerIndex === 1 && <div className={styles.glow} />}
             </div>
-          </motion.div>
-        ))}
-      </div>
 
-      {/* Image count info */}
-      <motion.div
-        className={styles.info}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-      >
-        <p className={styles.imageCount}>
-          {currentIndex + 1} / {totalImages}
-        </p>
-      </motion.div>
+            {/* Lightbox */}
+            <motion.div
+              className={styles.lightbox}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedIndex(null)}
+            >
+              <div className={styles.lightboxContent}>
+                <button
+                  className={`${styles.lightboxNavButton} ${styles.prevButton}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handlePrevious();
+                  }}
+                  aria-label="Previous image"
+                >
+                  ‹
+                </button>
 
-      {/* Lightbox */}
-      <ImageLightbox
-        isOpen={isLightboxOpen}
-        image={displayedImages[1] || null}
-        onClose={() => setIsLightboxOpen(false)}
-        onNext={() => {
-          setCurrentIndex((prev) => (prev + 1) % totalImages);
-        }}
-        onPrev={() => {
-          setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
-        }}
-      />
-    </div>
+                <div onClick={(e) => e.stopPropagation()}>
+                  <Image
+                    src={getImageUrl(project.images[selectedIndex].src)}
+                    alt={project.images[selectedIndex].alt || ""}
+                    width={1200}
+                    height={800}
+                    className={styles.lightboxImage}
+                  />
+                </div>
+
+                <button
+                  className={`${styles.lightboxNavButton} ${styles.nextButton}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNext();
+                  }}
+                  aria-label="Next image"
+                >
+                  ›
+                </button>
+
+                <div className={styles.counter}>
+                  {selectedIndex + 1} / {project.images.length}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </main>
   );
 }
