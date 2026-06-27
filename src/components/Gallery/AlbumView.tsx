@@ -98,6 +98,18 @@ export default function AlbumView({ project }: AlbumViewProps) {
         </div>
       </div>
 
+      {/* Glow backdrop — rendered outside cardStack so it's not constrained by card stacking context */}
+      <div className={styles.glowBackdrop}>
+        <Image
+          src={getImageUrl(displayedImages[1].src)}
+          alt=""
+          fill
+          className={styles.glowBackdropImage}
+          sizes="(max-width: 768px) 90vw, 70vw"
+          aria-hidden="true"
+        />
+      </div>
+
       {/* Main gallery cards */}
       <div className={styles.cardStack}>
         {displayedImages.map((image, layerIndex) => (
@@ -114,18 +126,6 @@ export default function AlbumView({ project }: AlbumViewProps) {
             }}
             transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            {layerIndex === 1 && (
-              <div className={styles.glowBackdrop}>
-                <Image
-                  src={getImageUrl(image.src)}
-                  alt=""
-                  fill
-                  className={styles.glowBackdropImage}
-                  sizes="(max-width: 768px) 90vw, 70vw"
-                  aria-hidden="true"
-                />
-              </div>
-            )}
             <div className={styles.imageWrapper}>
               <Image
                 src={getImageUrl(image.src)}
