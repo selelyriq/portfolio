@@ -21,8 +21,8 @@
 
 .imageContainer {
   position: relative;
-  max-width: min(63vw, 720px);
-  max-height: 67.5vh;
+  max-width: min(50vw, 576px);
+  max-height: 54vh;
   display: flex;
   align-items: center;
   justify-content: center;
