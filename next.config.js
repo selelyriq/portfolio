@@ -4,7 +4,11 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "lyriqsele.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.lyriqsele.com",
       },
     ],
     formats: ["image/avif", "image/webp"],
