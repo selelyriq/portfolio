@@ -71,7 +71,7 @@ export default function LandingPage() {
             <motion.div
               key={cell.id}
               className={styles.cell}
-              style={{ rotate: cell.rotation }}
+              style={{ rotate: 0 }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
