@@ -33,7 +33,7 @@
 
 /* Offset right column (even items) downwards */
 .cell:nth-child(2n) {
-  margin-top: 150px;
+  margin-top: 60px;
 }
 
 .imageWrapper {
