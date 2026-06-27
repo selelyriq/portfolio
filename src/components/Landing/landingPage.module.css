@@ -11,11 +11,11 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  gap: 2rem;
-  width: 90%;
-  max-width: 1400px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1.5rem;
+  width: 80%;
+  max-width: 900px;
   aspect-ratio: auto;
   padding: 2rem;
 }

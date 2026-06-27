@@ -18,7 +18,7 @@ export default function LandingPage() {
   >(new Map());
 
   // Initialize grid cells with fixed 45-degree rotation
-  const gridCells: GridCell[] = Array.from({ length: 20 }, (_, i) => ({
+  const gridCells: GridCell[] = Array.from({ length: 12 }, (_, i) => ({
     id: `cell-${i}`,
     rotation: 45, // Fixed 45-degree rotation
   }));
