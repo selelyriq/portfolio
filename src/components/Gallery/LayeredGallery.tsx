@@ -37,6 +37,7 @@ export default function LayeredGallery() {
   const lastScrollTimeRef = useRef(0);
   const currentIndexRef = useRef(currentIndex);
   const touchStartRef = useRef<number | null>(null);
+  const firstImageIndexRef = useRef(0);
   useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
   const allImages = flattenImages(portfolioData.projects);
@@ -62,8 +63,8 @@ export default function LayeredGallery() {
       const now = Date.now();
       if (now - lastScrollTimeRef.current < scrollDelay) return;
 
-      // Ceiling: if at index 0 and scrolling up, allow native scroll to landing page
-      if (e.deltaY < 0 && currentIndexRef.current === 0) return;
+      // Ceiling: if at first image and scrolling up, allow native scroll to landing page
+      if (e.deltaY < 0 && currentIndexRef.current === firstImageIndexRef.current) return;
 
       e.preventDefault();
 
@@ -80,8 +81,8 @@ export default function LayeredGallery() {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        // Ceiling: if at index 0 and pressing ArrowUp, allow native behavior
-        if (e.key === "ArrowUp" && currentIndexRef.current === 0) return;
+        // Ceiling: if at first image and pressing ArrowUp, allow native behavior
+        if (e.key === "ArrowUp" && currentIndexRef.current === firstImageIndexRef.current) return;
 
         const now = Date.now();
         if (now - lastScrollTimeRef.current < scrollDelay) return;
@@ -111,8 +112,8 @@ export default function LayeredGallery() {
 
       if (Math.abs(delta) < minSwipe) return;
 
-      // Ceiling: if at index 0 and swiping down (delta < 0), allow native scroll
-      if (delta < 0 && currentIndexRef.current === 0) {
+      // Ceiling: if at first image and swiping down (delta < 0), allow native scroll
+      if (delta < 0 && currentIndexRef.current === firstImageIndexRef.current) {
         touchStartRef.current = null;
         return;
       }
@@ -229,11 +230,11 @@ export default function LayeredGallery() {
           setCurrentIndex((prev) => (prev + 1) % totalImages);
         }}
         onPrev={() => {
-          if (currentIndex === 0) return;
+          if (currentIndex === firstImageIndexRef.current) return;
           setIsLightboxOpen(false);
           setCurrentIndex((prev) => prev - 1);
         }}
-        disablePrev={currentIndex === 0}
+        disablePrev={currentIndex === firstImageIndexRef.current}
       />
     </div>
   );
