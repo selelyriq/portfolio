@@ -101,23 +101,29 @@
 /* Card stack — identical to LayeredGallery */
 .cardStack {
   position: relative;
-  width: 100%;
-  max-width: 900px;
-  height: 600px;
-  perspective: 1000px;
+  width: 70vw;
+  max-width: 800px;
+  aspect-ratio: 3 / 4;
+  flex-shrink: 0;
 }
 
 .card {
   position: absolute;
-  width: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  inset: 0;
   cursor: pointer;
-  transition: all 0.3s ease;
+  z-index: 3;
+}
+
+.card:nth-child(2) {
+  z-index: 2;
+}
+
+.card:nth-child(3) {
+  z-index: 1;
 }
 
 .cardActive {
-  z-index: 2;
+  /* Active card is first child — z-index: 3 from .card applies */
 }
 
 .imageWrapper {
@@ -179,7 +185,7 @@
   }
 
   .cardStack {
-    height: 400px;
+    width: 85vw;
   }
 
   .info {
