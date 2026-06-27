@@ -20,6 +20,8 @@ interface ImageLightboxProps {
   onNext: () => void;
   onPrev: () => void;
   disablePrev?: boolean;
+  currentIndex?: number;
+  totalImages?: number;
 }
 
 export default function ImageLightbox({
@@ -29,6 +31,8 @@ export default function ImageLightbox({
   onNext,
   onPrev,
   disablePrev = false,
+  currentIndex = 0,
+  totalImages = 0,
 }: ImageLightboxProps) {
   const router = useRouter();
 
@@ -63,17 +67,6 @@ export default function ImageLightbox({
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3 }}
           >
-            {/* Close button */}
-            <motion.button
-              className={styles.closeButton}
-              onClick={onClose}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              aria-label="Close lightbox"
-            >
-              ✕
-            </motion.button>
-
             {/* Image — clickable to navigate to album */}
             <div
               className={styles.imageContainer}
@@ -115,10 +108,12 @@ export default function ImageLightbox({
               →
             </motion.button>
 
-            {/* Image info */}
-            <div className={styles.info}>
-              <p className={styles.imageAlt}>{image.alt}</p>
-            </div>
+            {/* Image counter */}
+            {totalImages > 0 && (
+              <div className={styles.counter}>
+                {currentIndex + 1} / {totalImages}
+              </div>
+            )}
           </motion.div>
         </>
       )}

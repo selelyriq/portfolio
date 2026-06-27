@@ -343,6 +343,8 @@ export default function LayeredGallery() {
           setCurrentIndex((prev) => prev - 1);
         }}
         disablePrev={currentIndex === firstImageIndexRef.current}
+        currentIndex={currentIndex}
+        totalImages={totalImages}
       />
     </div>
   );
