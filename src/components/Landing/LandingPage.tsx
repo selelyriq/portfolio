@@ -89,8 +89,8 @@ export default function LandingPage() {
                     <Image
                       src={getImageUrl(images.previous)}
                       alt="Highlight"
-                      width={250}
-                      height={350}
+                      width={140}
+                      height={196}
                       className={styles.image}
                       priority={false}
                     />
@@ -109,8 +109,8 @@ export default function LandingPage() {
                 <Image
                   src={getImageUrl(images.current)}
                   alt="Highlight"
-                  width={250}
-                  height={350}
+                  width={140}
+                  height={196}
                   className={styles.image}
                   priority={false}
                 />
