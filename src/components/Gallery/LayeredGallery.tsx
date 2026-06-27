@@ -155,17 +155,33 @@ export default function LayeredGallery() {
       touchStartRef.current = null;
     };
 
+    let lastScrollY = window.scrollY;
+
+    const handleScroll = () => {
+      // Lock scroll while in gallery (except at ceiling scrolling up)
+      const isCeiling = currentIndexRef.current === firstImageIndexRef.current;
+      if (!isCeiling) {
+        // Revert scroll to maintain position in feed
+        window.scrollTo(0, lastScrollY);
+      } else {
+        // At ceiling, allow scroll and track new position
+        lastScrollY = window.scrollY;
+      }
+    };
+
     const container = containerRef.current;
     container?.addEventListener("wheel", handleWheel, { passive: false });
     container?.addEventListener("touchstart", handleTouchStart, { passive: true });
     container?.addEventListener("touchend", handleTouchEnd, { passive: true });
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("scroll", handleScroll);
 
     return () => {
       container?.removeEventListener("wheel", handleWheel);
       container?.removeEventListener("touchstart", handleTouchStart);
       container?.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [totalImages]);
 
