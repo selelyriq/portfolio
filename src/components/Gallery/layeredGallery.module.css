@@ -28,8 +28,8 @@
 
 .cardStack {
   position: relative;
-  width: 70vw;
-  max-width: 800px;
+  width: 40vw;
+  max-width: 480px;
   aspect-ratio: 3 / 4;
   flex-shrink: 0;
 }
