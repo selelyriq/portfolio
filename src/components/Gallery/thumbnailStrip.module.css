@@ -56,17 +56,17 @@
   opacity: 1;
 }
 
-.thumbnailNext .image {
+.thumbnailCurrent .image {
   opacity: 1;
 }
 
 .highlight {
   position: absolute;
   inset: 0;
-  border: 2px solid var(--accent-gold-light);
+  border: 2px solid #ffffff;
   border-radius: 4px;
   pointer-events: none;
-  box-shadow: 0 0 12px rgba(232, 197, 71, 0.6);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
 }
 
 /* Mobile: hide thumbnail strip */

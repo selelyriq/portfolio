@@ -24,10 +24,11 @@ export default function ThumbnailStrip({
   onThumbnailClick,
   totalImages,
 }: ThumbnailStripProps) {
-  // Show thumbnails for next 6 images
-  const thumbnailIndices = Array.from({ length: 6 }, (_, i) =>
-    (currentIndex + i + 1) % totalImages
-  );
+  // Show 5 thumbnails: 2 before, current, 2 after
+  const thumbnailIndices = Array.from({ length: 5 }, (_, i) => {
+    const offset = i - 2; // -2, -1, 0, 1, 2
+    return (currentIndex + offset + totalImages) % totalImages;
+  });
 
   return (
     <motion.div
@@ -38,13 +39,13 @@ export default function ThumbnailStrip({
     >
       {thumbnailIndices.map((index) => {
         const image = images[index];
-        const isNext = index === (currentIndex + 1) % totalImages;
+        const isCurrent = index === currentIndex;
 
         return (
           <motion.button
             key={image.id}
             className={`${styles.thumbnail} ${
-              isNext ? styles.thumbnailNext : ""
+              isCurrent ? styles.thumbnailCurrent : ""
             }`}
             onClick={() => onThumbnailClick(index)}
             whileHover={{ scale: 1.05 }}
@@ -59,7 +60,7 @@ export default function ThumbnailStrip({
               className={styles.image}
               sizes="60px"
             />
-            {isNext && <div className={styles.highlight} />}
+            {isCurrent && <div className={styles.highlight} />}
           </motion.button>
         );
       })}
