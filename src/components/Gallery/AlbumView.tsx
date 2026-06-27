@@ -98,14 +98,14 @@ export default function AlbumView({ project }: AlbumViewProps) {
         </div>
       </div>
 
-      {/* Glow backdrop — rendered outside cardStack so it's not constrained by card stacking context */}
+      {/* Glow backdrop */}
       <div className={styles.glowBackdrop}>
         <Image
           src={getImageUrl(displayedImages[1].src)}
           alt=""
-          fill
+          width={600}
+          height={600}
           className={styles.glowBackdropImage}
-          sizes="(max-width: 768px) 90vw, 70vw"
           aria-hidden="true"
         />
       </div>

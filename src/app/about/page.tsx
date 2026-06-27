@@ -10,16 +10,6 @@ export default function About() {
         {/* Photo section */}
         <div className={styles.photoSection}>
           <div className={styles.photoContainer}>
-            {/* Blurred background glow */}
-            <Image
-              src="/images/about.jpg"
-              alt=""
-              width={400}
-              height={400}
-              className={styles.photoGlow}
-              aria-hidden="true"
-            />
-            {/* Main photo */}
             <Image
               src="/images/about.jpg"
               alt="Lyriq Sele"
