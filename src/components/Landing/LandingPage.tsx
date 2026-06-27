@@ -12,9 +12,14 @@ interface GridCell {
   rotation: number;
 }
 
+interface CellImage {
+  current: string;
+  previous: string | null;
+}
+
 export default function LandingPage() {
   const [displayedImages, setDisplayedImages] = useState<
-    Map<string, string>
+    Map<string, CellImage>
   >(new Map());
 
   // Initialize grid cells with fixed 45-degree rotation
@@ -25,11 +30,11 @@ export default function LandingPage() {
 
   // Initialize with random images for each cell
   useEffect(() => {
-    const initialImages = new Map<string, string>();
+    const initialImages = new Map<string, CellImage>();
     gridCells.forEach((cell) => {
       const randomImage =
         highlightImages[Math.floor(Math.random() * highlightImages.length)];
-      initialImages.set(cell.id, randomImage.src);
+      initialImages.set(cell.id, { current: randomImage.src, previous: null });
     });
     setDisplayedImages(initialImages);
   }, []);
@@ -40,9 +45,13 @@ export default function LandingPage() {
       setDisplayedImages((prev) => {
         const updated = new Map(prev);
         gridCells.forEach((cell) => {
+          const oldImage = prev.get(cell.id);
           const randomImage =
             highlightImages[Math.floor(Math.random() * highlightImages.length)];
-          updated.set(cell.id, randomImage.src);
+          updated.set(cell.id, {
+            current: randomImage.src,
+            previous: oldImage?.current || null,
+          });
         });
         return updated;
       });
@@ -55,8 +64,8 @@ export default function LandingPage() {
     <div className={styles.landing}>
       <div className={styles.grid}>
         {gridCells.map((cell) => {
-          const imageSrc = displayedImages.get(cell.id);
-          if (!imageSrc) return null;
+          const images = displayedImages.get(cell.id);
+          if (!images) return null;
 
           return (
             <motion.div
@@ -67,16 +76,34 @@ export default function LandingPage() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
             >
+              {/* Previous image (underneath) */}
+              {images.previous && (
+                <motion.div
+                  className={styles.imageWrapper}
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 0 }}
+                  transition={{ duration: 3 }}
+                >
+                  <Image
+                    src={getImageUrl(images.previous)}
+                    alt="Highlight"
+                    width={250}
+                    height={350}
+                    className={styles.image}
+                    priority={false}
+                  />
+                </motion.div>
+              )}
+
+              {/* Current image (on top, fading in) */}
               <motion.div
                 className={styles.imageWrapper}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
                 transition={{ duration: 3 }}
-                key={imageSrc}
               >
                 <Image
-                  src={getImageUrl(imageSrc)}
+                  src={getImageUrl(images.current)}
                   alt="Highlight"
                   width={250}
                   height={350}
