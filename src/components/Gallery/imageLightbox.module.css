@@ -46,7 +46,7 @@
   background: var(--glass-bg, rgba(255, 255, 255, 0.05));
   backdrop-filter: blur(var(--glass-blur-sm, 6px));
   -webkit-backdrop-filter: blur(var(--glass-blur-sm, 6px));
-  border: 1px solid var(--glass-border-gold, rgba(212, 175, 55, 0.25));
+  border: 1px solid var(--glass-border-gold, rgba(200, 200, 200, 0.25));
   border-radius: 50%;
   color: var(--text-primary);
   font-size: 1.5rem;
@@ -60,9 +60,9 @@
 }
 
 .closeButton:hover {
-  background: rgba(212, 175, 55, 0.12);
-  border-color: rgba(212, 175, 55, 0.5);
-  box-shadow: 0 0 20px 6px rgba(212, 175, 55, 0.2);
+  background: rgba(200, 200, 200, 0.12);
+  border-color: rgba(200, 200, 200, 0.5);
+  box-shadow: 0 0 20px 6px rgba(200, 200, 200, 0.2);
 }
 
 .navButton {
@@ -89,9 +89,9 @@
 }
 
 .navButton:hover {
-  background: rgba(212, 175, 55, 0.1);
-  border-color: rgba(212, 175, 55, 0.4);
-  box-shadow: 0 0 20px 4px rgba(212, 175, 55, 0.15);
+  background: rgba(200, 200, 200, 0.1);
+  border-color: rgba(200, 200, 200, 0.4);
+  box-shadow: 0 0 20px 4px rgba(200, 200, 200, 0.15);
 }
 
 .prevButton {

@@ -8,7 +8,6 @@
   background: rgba(10, 10, 10, 0.75);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
   display: flex;
   align-items: center;
   padding: 0 2rem;
@@ -20,17 +19,21 @@
   margin: 0 auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 2rem;
+  position: relative;
 }
 
 /* Logo */
 .logo {
   text-decoration: none;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   line-height: 1.1;
   flex-shrink: 0;
+  position: absolute;
+  left: 2rem;
 }
 
 .logoMain {
@@ -38,14 +41,11 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent-gold);
+  color: var(--text-primary);
 }
 
 .logoSub {
-  font-size: 0.6rem;
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-  color: var(--text-secondary);
+  display: none;
 }
 
 /* Nav */
@@ -73,21 +73,17 @@
 }
 
 .navLink:hover {
-  color: var(--accent-gold);
-  background: rgba(212, 175, 55, 0.07);
+  color: var(--text-primary);
+  background: rgba(200, 200, 200, 0.07);
 }
 
 .navLinkActive {
-  color: var(--accent-gold);
+  color: var(--text-primary);
 }
 
 /* Divider between nav and social */
 .divider {
-  width: 1px;
-  height: 20px;
-  background: var(--border-color);
-  flex-shrink: 0;
-  margin: 0 0.5rem;
+  display: none;
 }
 
 /* Social links */
@@ -96,6 +92,8 @@
   align-items: center;
   gap: 0.125rem;
   list-style: none;
+  position: absolute;
+  right: 2rem;
 }
 
 .socialLink {
@@ -112,8 +110,8 @@
 }
 
 .socialLink:hover {
-  color: var(--accent-gold);
-  background: rgba(212, 175, 55, 0.07);
+  color: var(--text-primary);
+  background: rgba(200, 200, 200, 0.07);
 }
 
 /* Mobile menu toggle (visible on mobile only) */
@@ -185,7 +183,6 @@
     background: rgba(10, 10, 10, 0.97);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
     padding: 1rem 1.5rem 1.5rem;
     gap: 0.25rem;
     z-index: 99;
@@ -223,7 +220,7 @@
 
   .mobileNavLink:hover,
   .mobileNavLinkActive {
-    color: var(--accent-gold);
+    color: var(--text-primary);
   }
 
   .mobileSocialRow {
@@ -247,6 +244,6 @@
   }
 
   .mobileSocialLink:hover {
-    color: var(--accent-gold);
+    color: var(--text-primary);
   }
 }

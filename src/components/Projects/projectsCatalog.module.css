@@ -52,10 +52,10 @@
 
 .card:hover {
   transform: translateY(-4px) scale(1.01);
-  border-color: var(--glass-border-gold, rgba(212, 175, 55, 0.4));
+  border-color: var(--glass-border-gold, rgba(200, 200, 200, 0.4));
   /* Gold glow on hover — matches glow-on-hover utility */
-  box-shadow: 0 8px 40px var(--glow-gold, rgba(212, 175, 55, 0.25)),
-    0 0 0 1px rgba(212, 175, 55, 0.15);
+  box-shadow: 0 8px 40px var(--glow-gold, rgba(200, 200, 200, 0.25)),
+    0 0 0 1px rgba(200, 200, 200, 0.15);
 }
 
 .thumbnail {
@@ -106,7 +106,7 @@
 
 .year {
   font-size: 0.75rem;
-  color: var(--accent-gold, #d4af37);
+  color: var(--text-primary);
   letter-spacing: 0.12em;
 }
 

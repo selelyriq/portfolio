@@ -6,15 +6,13 @@ import { usePathname } from "next/navigation";
 import styles from "./header.module.css";
 
 const NAV_ITEMS = [
-  { label: "Gallery", href: "/" },
+  { label: "Gallery", href: "/gallery" },
   { label: "Albums", href: "/projects" },
   { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
 ];
 
 const SOCIAL_ITEMS = [
-  { label: "Instagram", href: "https://instagram.com", icon: "📷" },
-  { label: "Email", href: "mailto:hello@example.com", icon: "✉" },
+  { label: "Instagram", href: "https://www.instagram.com/lyriqsele/", icon: "📷" },
 ];
 
 export default function Header() {
@@ -29,6 +27,14 @@ export default function Header() {
     setMobileOpen(false);
   }
 
+  function handleLogoClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    closeMobile();
+    if (pathname === "/") {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }
+
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);
@@ -38,9 +44,8 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.inner}>
         {/* Logo */}
-        <Link href="/" className={styles.logo} onClick={closeMobile}>
-          <span className={styles.logoMain}>Lyriq</span>
-          <span className={styles.logoSub}>Photography</span>
+        <Link href="/" className={styles.logo} onClick={handleLogoClick}>
+          <span className={styles.logoMain}>𝐿𝓎𝓇𝒾𝓆 𝒮𝑒𝓁𝑒</span>
         </Link>
 
         {/* Desktop nav */}
