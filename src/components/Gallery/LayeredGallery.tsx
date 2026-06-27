@@ -60,13 +60,19 @@ export default function LayeredGallery() {
     const scrollDelay = 1200; // milliseconds between scroll events
 
     const handleWheel = (e: WheelEvent) => {
+      // Ceiling: if at first image and scrolling up, allow native scroll to landing page
+      const isCeiling = e.deltaY < 0 && currentIndexRef.current === firstImageIndexRef.current;
+
+      // Always lock window while in feed (except at ceiling scrolling up)
+      if (!isCeiling) {
+        e.preventDefault();
+      }
+
       const now = Date.now();
       if (now - lastScrollTimeRef.current < scrollDelay) return;
 
-      // Ceiling: if at first image and scrolling up, allow native scroll to landing page
-      if (e.deltaY < 0 && currentIndexRef.current === firstImageIndexRef.current) return;
-
-      e.preventDefault();
+      // If at ceiling and scrolling up, allow page scroll without changing image
+      if (isCeiling) return;
 
       if (e.deltaY > 0) {
         // Scroll down (wrap at end)
@@ -81,11 +87,19 @@ export default function LayeredGallery() {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        // Ceiling: if at first image and pressing ArrowUp, allow native behavior
-        if (e.key === "ArrowUp" && currentIndexRef.current === firstImageIndexRef.current) return;
+        const isCeiling = e.key === "ArrowUp" && currentIndexRef.current === firstImageIndexRef.current;
+
+        // Lock keys while in feed (except at ceiling with ArrowUp)
+        if (!isCeiling) {
+          e.preventDefault();
+        }
 
         const now = Date.now();
         if (now - lastScrollTimeRef.current < scrollDelay) return;
+
+        // If at ceiling and pressing ArrowUp, allow native behavior without changing image
+        if (isCeiling) return;
+
         if (e.key === "ArrowDown") {
           setCurrentIndex((prev) => (prev + 1) % totalImages);
         } else {
@@ -101,8 +115,6 @@ export default function LayeredGallery() {
 
     const handleTouchEnd = (e: TouchEvent) => {
       if (touchStartRef.current === null) return;
-      const now = Date.now();
-      if (now - lastScrollTimeRef.current < scrollDelay) return;
 
       const touchEndY = e.changedTouches[0]?.clientY;
       if (touchEndY === undefined) return;
@@ -110,10 +122,22 @@ export default function LayeredGallery() {
       const delta = touchStartRef.current - touchEndY;
       const minSwipe = 50; // Minimum swipe distance
 
-      if (Math.abs(delta) < minSwipe) return;
+      if (Math.abs(delta) < minSwipe) {
+        touchStartRef.current = null;
+        return;
+      }
 
       // Ceiling: if at first image and swiping down (delta < 0), allow native scroll
-      if (delta < 0 && currentIndexRef.current === firstImageIndexRef.current) {
+      const isCeiling = delta < 0 && currentIndexRef.current === firstImageIndexRef.current;
+
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current < scrollDelay) {
+        touchStartRef.current = null;
+        return;
+      }
+
+      // If at ceiling and swiping down, allow page scroll without changing image
+      if (isCeiling) {
         touchStartRef.current = null;
         return;
       }
