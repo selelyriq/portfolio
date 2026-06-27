@@ -2,11 +2,97 @@
   position: relative;
   width: 100%;
   height: 100vh;
-  background-color: #1a1a1a;
+  background-color: #0a0a0a;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+}
+
+.gridMiddle {
+  position: absolute;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  column-gap: 1rem;
+  row-gap: 120px;
+  width: fit-content;
+  margin: 0 auto 0 1px;
+  aspect-ratio: auto;
+  padding: 1rem;
+  z-index: 2;
+  pointer-events: none;
+  transform: translate(-600px, -90px);
+  opacity: 1;
+}
+
+.cellMiddle {
+  position: relative;
+  width: 68px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 15px;
+  margin-left: 25px;
+}
+
+.imageWrapperMiddle {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.imageMiddle {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0.9;
+}
+
+.gridBlur {
+  position: absolute;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  column-gap: 1rem;
+  row-gap: 1px;
+  width: fit-content;
+  margin: 0 auto 0 1px;
+  aspect-ratio: auto;
+  padding: 1rem;
+  z-index: 0;
+  pointer-events: none;
+  transform: translateX(-375px);
+}
+
+.cellBlur {
+  position: relative;
+  width: 202px;
+  height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 15px;
+  margin-left: 25px;
+}
+
+.imageWrapperBlur {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.imageBlur {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: blur(50px);
+  opacity: 0.35;
 }
 
 .grid {
@@ -14,11 +100,13 @@
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(4, 1fr);
   column-gap: 1rem;
-  row-gap: 1rem;
+  row-gap: 1px;
   width: fit-content;
-  margin: 0 auto;
+  margin: 0 auto 0 2rem;
   aspect-ratio: auto;
-  padding: 2rem;
+  padding: 1rem;
+  position: relative;
+  z-index: 1;
 }
 
 .cell {
@@ -32,9 +120,18 @@
   transform-style: preserve-3d;
 }
 
-/* Offset right column (even items) downwards */
+/* Offset left column (odd items) */
+.cell:nth-child(2n-1) {
+  position: relative;
+  bottom: 32px;
+  margin-right: 15px;
+}
+
+/* Offset right column (even items) */
 .cell:nth-child(2n) {
-  margin-top: 120px;
+  position: relative;
+  top: 15px;
+  margin-left: 20px;
 }
 
 .imageWrapper {
@@ -42,7 +139,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  border-radius: 8px;
+  border-radius: 0px;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }

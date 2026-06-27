@@ -62,6 +62,125 @@ export default function LandingPage() {
 
   return (
     <div className={styles.landing}>
+      {/* Small middle layer - only right column */}
+      <div className={styles.gridMiddle}>
+        {gridCells.map((cell, index) => {
+          // Only render every other right column cell (indices 1, 5, 9)
+          if (![1, 5, 9].includes(index)) return null;
+
+          const images = displayedImages.get(cell.id);
+          if (!images) return null;
+
+          return (
+            <motion.div
+              key={`middle-${cell.id}`}
+              className={styles.cellMiddle}
+              style={{ rotate: 45 }}
+            >
+              <AnimatePresence>
+                {/* Previous image (underneath) */}
+                {images.previous && (
+                  <motion.div
+                    key={`middle-prev-${images.previous}`}
+                    className={styles.imageWrapperMiddle}
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 3 }}
+                  >
+                    <Image
+                      src={getImageUrl(images.previous)}
+                      alt="Highlight middle"
+                      width={68}
+                      height={120}
+                      className={styles.imageMiddle}
+                      priority={false}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Current image (on top, fading in) */}
+              <motion.div
+                key={`middle-curr-${images.current}`}
+                className={styles.imageWrapperMiddle}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 3 }}
+              >
+                <Image
+                  src={getImageUrl(images.current)}
+                  alt="Highlight middle"
+                  width={68}
+                  height={120}
+                  className={styles.imageMiddle}
+                  priority={false}
+                />
+              </motion.div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Blurred glow layer - only right column */}
+      <div className={styles.gridBlur}>
+        {gridCells.map((cell, index) => {
+          // Only render right column (even indices: 1, 3, 5, 7, 9, 11)
+          if (index % 2 === 0) return null;
+
+          const images = displayedImages.get(cell.id);
+          if (!images) return null;
+
+          return (
+            <motion.div
+              key={`blur-${cell.id}`}
+              className={styles.cellBlur}
+              style={{ rotate: 45 }}
+            >
+              <AnimatePresence>
+                {/* Previous image (underneath) */}
+                {images.previous && (
+                  <motion.div
+                    key={`blur-prev-${images.previous}`}
+                    className={styles.imageWrapperBlur}
+                    initial={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 3 }}
+                  >
+                    <Image
+                      src={getImageUrl(images.previous)}
+                      alt="Highlight blur"
+                      width={202}
+                      height={360}
+                      className={styles.imageBlur}
+                      priority={false}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Current image (on top, fading in) */}
+              <motion.div
+                key={`blur-curr-${images.current}`}
+                className={styles.imageWrapperBlur}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 3 }}
+              >
+                <Image
+                  src={getImageUrl(images.current)}
+                  alt="Highlight blur"
+                  width={202}
+                  height={360}
+                  className={styles.imageBlur}
+                  priority={false}
+                />
+              </motion.div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Main grid */}
       <div className={styles.grid}>
         {gridCells.map((cell) => {
           const images = displayedImages.get(cell.id);
@@ -71,7 +190,7 @@ export default function LandingPage() {
             <motion.div
               key={cell.id}
               className={styles.cell}
-              style={{ rotate: 0 }}
+              style={{ rotate: 45 }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8 }}

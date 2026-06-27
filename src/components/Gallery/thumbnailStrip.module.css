@@ -1,7 +1,7 @@
 .strip {
   position: fixed;
   right: 2rem;
-  top: 50%;
+  top: 35%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
@@ -13,17 +13,17 @@
 }
 
 .strip::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 
 .strip::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.strip::-webkit-scrollbar-thumb {
+/* .strip::-webkit-scrollbar-thumb {
   background: var(--accent-gold);
   border-radius: 2px;
-}
+} */
 
 .thumbnail {
   position: relative;
