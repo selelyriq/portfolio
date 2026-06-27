@@ -113,7 +113,7 @@ export default function LayeredGallery() {
             onClick={() => layerIndex === 1 && setIsLightboxOpen(true)}
             initial={{ opacity: 0, y: 20 }}
             animate={{
-              opacity: layerIndex === 1 ? 1 : 0.65,
+              opacity: layerIndex === 1 ? 1 : 0.25,
               scale: layerIndex === 1 ? 1 : 0.85,
               y: layerIndex === 0 ? -90 : layerIndex === 1 ? 0 : 90,
               zIndex: layerIndex === 1 ? 3 : layerIndex === 0 ? 1 : 2,

@@ -60,6 +60,7 @@
   overflow: hidden;
   border-radius: 8px;
   background-color: var(--bg-secondary);
+  z-index: 1;
 }
 
 .image {
