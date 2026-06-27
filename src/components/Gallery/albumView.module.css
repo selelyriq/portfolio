@@ -140,13 +140,13 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  box-shadow: 0 0 60px 20px rgba(212, 175, 55, 0.3),
-    inset 0 0 40px rgba(212, 175, 55, 0.1);
   border-radius: 8px;
-  backdrop-filter: blur(10px);
+  /* Gold halo via box-shadow (composited, no repaint) */
+  box-shadow: 0 0 60px 20px var(--glow-gold, rgba(212, 175, 55, 0.25)),
+    inset 0 0 40px rgba(212, 175, 55, 0.08);
   background: radial-gradient(
     circle at center,
-    rgba(212, 175, 55, 0.1) 0%,
+    rgba(212, 175, 55, 0.08) 0%,
     transparent 70%
   );
 }

@@ -39,17 +39,22 @@
   text-decoration: none;
   border-radius: 12px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  /* Enhanced glassmorphism using utility vars */
+  background: var(--glass-bg, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.08));
+  backdrop-filter: blur(var(--glass-blur, 12px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 12px));
+  /* Separate transition properties for performance — avoid animating filter */
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s ease, border-color 0.3s ease;
   cursor: pointer;
 }
 
 .card:hover {
   transform: translateY(-4px) scale(1.01);
-  border-color: rgba(212, 175, 55, 0.4);
-  box-shadow: 0 8px 40px rgba(212, 175, 55, 0.2),
+  border-color: var(--glass-border-gold, rgba(212, 175, 55, 0.4));
+  /* Gold glow on hover — matches glow-on-hover utility */
+  box-shadow: 0 8px 40px var(--glow-gold, rgba(212, 175, 55, 0.25)),
     0 0 0 1px rgba(212, 175, 55, 0.15);
 }
 

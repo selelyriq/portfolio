@@ -1,0 +1,148 @@
+/*
+ * Glassmorphism & Glow Utility Classes
+ *
+ * Import once in globals.css. Apply classes directly in JSX or reference
+ * them from CSS Modules via :global(.glass) etc.
+ *
+ * Performance notes:
+ * - backdrop-filter is GPU-accelerated but expensive. Keep it on static
+ *   elements only; never animate it directly.
+ * - Glow effects use box-shadow (composited) or inert pseudo-elements so
+ *   they don't trigger layout/paint on hover.
+ * - will-change is intentionally omitted here; add it per-component only
+ *   when an element is guaranteed to animate.
+ */
+
+/* ─── CSS custom properties ─────────────────────────────────────────────── */
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-bg-md: rgba(255, 255, 255, 0.08);
+  --glass-bg-lg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-border-gold: rgba(212, 175, 55, 0.25);
+  --glass-blur: 12px;
+  --glass-blur-sm: 6px;
+  --glass-blur-lg: 20px;
+
+  --glow-gold: rgba(212, 175, 55, 0.25);
+  --glow-gold-bright: rgba(212, 175, 55, 0.45);
+  --glow-gold-subtle: rgba(212, 175, 55, 0.12);
+}
+
+/* ─── Frosted glass ──────────────────────────────────────────────────────── */
+
+/* Base — thin veil of frosted glass */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* Lighter blur for small chrome (buttons, badges) */
+.glass-sm {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur-sm));
+  -webkit-backdrop-filter: blur(var(--glass-blur-sm));
+  border: 1px solid var(--glass-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* Medium — cards, panels */
+.glass-md {
+  background: var(--glass-bg-md);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* Strong — modals, overlays */
+.glass-lg {
+  background: var(--glass-bg-lg);
+  backdrop-filter: blur(var(--glass-blur-lg));
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg));
+  border: 1px solid var(--glass-border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* Gold-bordered variant (header, focused cards) */
+.glass-gold {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border-gold);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+/* ─── Glow effects ───────────────────────────────────────────────────────── */
+
+/*
+ * Standard gold halo — applied to the element itself via box-shadow.
+ * Works well on image wrappers and cards.
+ */
+.glow {
+  box-shadow: 0 0 60px 20px var(--glow-gold);
+  transition: box-shadow 0.4s ease;
+}
+
+.glow:hover {
+  box-shadow: 0 0 80px 30px var(--glow-gold-bright);
+}
+
+/* Brighter version for hero / featured images */
+.glow-bright {
+  box-shadow: 0 0 80px 30px var(--glow-gold-bright),
+    0 0 120px 60px var(--glow-gold);
+  transition: box-shadow 0.4s ease;
+}
+
+/* Minimal — secondary / background elements */
+.glow-subtle {
+  box-shadow: 0 0 30px 10px var(--glow-gold-subtle);
+  transition: box-shadow 0.4s ease;
+}
+
+/*
+ * Pseudo-element halo — mounts a blurred radial gradient behind the element.
+ * The parent must have position: relative and a non-auto z-index so z-index: -1
+ * on ::before is relative to the stacking context, not the page.
+ * Usage: add class="glow-halo" plus position: relative on the parent.
+ */
+.glow-halo {
+  position: relative;
+  isolation: isolate;
+}
+
+.glow-halo::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(
+    circle,
+    rgba(212, 175, 55, 0.3) 0%,
+    transparent 70%
+  );
+  filter: blur(40px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ─── Hover glow on interactive elements ────────────────────────────────── */
+
+/*
+ * Adds gold glow only on hover (cards, buttons).
+ * Keep the base state shadow-free to avoid compositor layer overhead at rest.
+ */
+.glow-on-hover {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.glow-on-hover:hover {
+  box-shadow: 0 8px 40px var(--glow-gold),
+    0 0 0 1px rgba(212, 175, 55, 0.15);
+  border-color: var(--glass-border-gold);
+}

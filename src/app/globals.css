@@ -1,3 +1,5 @@
+@import '../styles/glassmorphism.css';
+
 :root {
   --bg-primary: #0a0a0a;
   --bg-secondary: #1a1a1a;
