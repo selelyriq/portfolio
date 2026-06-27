@@ -113,63 +113,39 @@
   object-fit: contain;
 }
 
-.closeButton {
-  position: absolute;
-  top: -50px;
-  right: 0;
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: 2rem;
-  cursor: pointer;
-  padding: 0;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: color 0.2s ease;
-}
-
-.closeButton:hover {
-  color: var(--text-primary);
-}
-
 .navButton {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.1);
+  background: none;
   border: none;
   color: var(--text-primary);
   font-size: 3rem;
   cursor: pointer;
-  padding: 1rem 1.5rem;
-  transition: background 0.2s ease, color 0.2s ease;
-  border-radius: 4px;
+  padding: 0.5rem;
+  transition: opacity 0.2s ease;
 }
 
 .navButton:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--text-primary);
+  opacity: 0.7;
 }
 
 .prevButton {
-  left: -100px;
+  left: -80px;
 }
 
 .nextButton {
-  right: -100px;
+  right: -80px;
 }
 
 .counter {
-  position: absolute;
-  bottom: -50px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  white-space: nowrap;
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+  z-index: 1001;
 }
 
 @media (max-width: 768px) {
@@ -180,9 +156,6 @@
 
   .navButton {
     font-size: 2rem;
-    padding: 0.75rem 1rem;
-    top: 50%;
-    transform: translateY(-50%);
   }
 
   .prevButton {
@@ -193,13 +166,8 @@
     right: 1rem;
   }
 
-  .closeButton {
-    top: 1rem;
-    right: 1rem;
-  }
-
   .counter {
     bottom: 1rem;
-    transform: translateX(-50%);
+    right: 1rem;
   }
 }

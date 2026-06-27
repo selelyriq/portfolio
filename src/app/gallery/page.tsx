@@ -59,14 +59,6 @@ export default function Gallery() {
           >
             <div className={styles.lightboxContent} onClick={(e) => e.stopPropagation()}>
               <button
-                className={styles.closeButton}
-                onClick={() => setSelectedIndex(null)}
-                aria-label="Close lightbox"
-              >
-                ✕
-              </button>
-
-              <button
                 className={`${styles.navButton} ${styles.prevButton}`}
                 onClick={handlePrevious}
                 aria-label="Previous image"
@@ -89,10 +81,10 @@ export default function Gallery() {
               >
                 ›
               </button>
+            </div>
 
-              <div className={styles.counter}>
-                {selectedIndex + 1} / {highlightImages.length}
-              </div>
+            <div className={styles.counter} onClick={(e) => e.stopPropagation()}>
+              {selectedIndex + 1} / {highlightImages.length}
             </div>
           </motion.div>
         )}
