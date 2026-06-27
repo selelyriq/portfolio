@@ -113,9 +113,9 @@ export default function LayeredGallery() {
             onClick={() => layerIndex === 1 && setIsLightboxOpen(true)}
             initial={{ opacity: 0, y: 20 }}
             animate={{
-              opacity: layerIndex === 1 ? 1 : 0.4,
-              scale: layerIndex === 1 ? 1 : 0.7,
-              y: layerIndex === 0 ? -80 : layerIndex === 1 ? 0 : 80,
+              opacity: layerIndex === 1 ? 1 : 0.65,
+              scale: layerIndex === 1 ? 1 : 0.85,
+              y: layerIndex === 0 ? -90 : layerIndex === 1 ? 0 : 90,
               zIndex: layerIndex === 1 ? 3 : layerIndex === 0 ? 1 : 2,
             }}
             transition={{ duration: 0.6, ease: "easeOut" }}
