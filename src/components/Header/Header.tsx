@@ -8,7 +8,6 @@ import styles from "./header.module.css";
 const NAV_ITEMS = [
   { label: "Gallery", href: "/gallery" },
   { label: "Albums", href: "/projects" },
-  { label: "About", href: "/about" },
 ];
 
 const SOCIAL_ITEMS = [

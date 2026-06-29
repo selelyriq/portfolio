@@ -1,0 +1,35 @@
+.about {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem;
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.content {
+  max-width: 900px;
+  width: 100%;
+}
+
+.graphic {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.placeholder {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  text-align: center;
+  opacity: 0.4;
+}

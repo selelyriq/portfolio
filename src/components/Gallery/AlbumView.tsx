@@ -86,11 +86,10 @@ export default function AlbumView({ project }: AlbumViewProps) {
           <>
             {/* Glow backdrop - only in fullscreen */}
             <div className={styles.lightboxGlowBackdrop}>
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={getImageUrl(project.images[selectedIndex].src)}
                 alt=""
-                width={600}
-                height={600}
                 className={styles.glowBackdropImage}
                 aria-hidden="true"
               />
