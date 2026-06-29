@@ -3,7 +3,7 @@
   width: 100%;
   min-height: 120vh;
   background-color: var(--bg-primary);
-  overflow: hidden;
+  overflow: clip;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -36,6 +36,7 @@
   aspect-ratio: 3 / 4;
   flex-shrink: 0;
   margin-top: 100px;
+  overscroll-behavior: contain;
 }
 
 .card {
@@ -97,6 +98,7 @@
   z-index: 0;
   opacity: 0.35;
   filter: blur(60px);
+  will-change: transform; /* force own GPU layer; browser expands bounds for filter output */
 }
 
 .glowBackdropImage {

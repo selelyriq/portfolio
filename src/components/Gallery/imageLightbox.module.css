@@ -64,11 +64,11 @@
 }
 
 .prevButton {
-  left: 2rem;
+  left: -80px;
 }
 
 .nextButton {
-  right: 2rem;
+  right: -80px;
 }
 
 .counter {
@@ -92,11 +92,11 @@
   }
 
   .prevButton {
-    left: 1rem;
+    left: -50px;
   }
 
   .nextButton {
-    right: 1rem;
+    right: -50px;
   }
 
   .counter {

@@ -18,3 +18,13 @@ export interface Project {
 export interface PortfolioData {
   projects: Project[];
 }
+
+export interface FlatImage {
+  id: string;
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  projectId: string;
+  projectTitle: string;
+}

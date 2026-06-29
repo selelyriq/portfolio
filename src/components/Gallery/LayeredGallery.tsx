@@ -3,46 +3,34 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { portfolioData } from "@/data/projects";
+import { galleryFeed } from "@/data/galleryFeed";
 import { getImageUrl } from "@/utils/imageLoader";
-import { Project } from "@/types";
 import ThumbnailStrip from "./ThumbnailStrip";
 import ImageLightbox from "./ImageLightbox";
 import styles from "./layeredGallery.module.css";
 
-interface FlatImage {
-  id: string;
-  src: string;
-  alt: string;
-  width: number;
-  height: number;
-  projectId: string;
-  projectTitle: string;
-}
-
-function flattenImages(projects: Project[]): FlatImage[] {
-  return projects.flatMap((project) =>
-    project.images.map((image) => ({
-      ...image,
-      projectId: project.id,
-      projectTitle: project.title,
-    }))
-  );
-}
+const PRELOAD_AHEAD = 3;
+const PRELOAD_BEHIND = 1;
 
 export default function LayeredGallery() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const cardStackRef = useRef<HTMLDivElement>(null);
   const lastScrollTimeRef = useRef(0);
   const currentIndexRef = useRef(currentIndex);
   const touchStartRef = useRef<number | null>(null);
   const firstImageIndexRef = useRef(0);
-  const ceilingExitAttemptsRef = useRef(0);
-  const lastCeilingAttemptTimeRef = useRef(0);
   useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
-  const allImages = flattenImages(portfolioData.projects);
+  const [allImages] = useState(() => {
+    const arr = [...galleryFeed];
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  });
   const totalImages = allImages.length;
 
   // Calculate which images to display (previous, current, next)
@@ -59,99 +47,49 @@ export default function LayeredGallery() {
     const scrollDelay = 1200; // milliseconds between scroll events
 
     const handleWheel = (e: WheelEvent) => {
+      // Listener is on the cardStack, so this only fires when the cursor is
+      // over the stacked photo cards — no viewport-engagement guard needed.
       const atCeiling = currentIndexRef.current === firstImageIndexRef.current;
       const scrollingUp = e.deltaY < 0;
 
-      // At ceiling: require two deliberate up-scrolls to exit (with debounce)
-      if (atCeiling && scrollingUp) {
-        const now = Date.now();
-        const timeSinceLastAttempt = now - lastCeilingAttemptTimeRef.current;
-        const debounceDelay = 300; // Wait 300ms between attempts to filter wheel momentum
+      // At first image scrolling up — let page scroll up naturally, no preventDefault
+      if (atCeiling && scrollingUp) return;
 
-        if (ceilingExitAttemptsRef.current === 0) {
-          // First attempt
-          ceilingExitAttemptsRef.current = 1;
-          lastCeilingAttemptTimeRef.current = now;
-          e.preventDefault();
-          return;
-        } else if (ceilingExitAttemptsRef.current === 1 && timeSinceLastAttempt >= debounceDelay) {
-          // Second deliberate attempt (after debounce): allow scroll to landing
-          return;
-        } else {
-          // Still within debounce window: treat as momentum, don't exit
-          e.preventDefault();
-          return;
-        }
-      }
+      // Lock the page while cursor is on the card — prevents scrolling past the gallery
+      e.preventDefault();
 
-      // Reset exit attempts when scrolling down or away from ceiling
-      if (scrollingUp === false) {
-        ceilingExitAttemptsRef.current = 0;
-      }
-
-      // Lock window while in feed
-      if (atCeiling === false) {
-        e.preventDefault();
-      }
-
+      // Debounce: page is locked above but navigation only fires when cooldown clears
       const now = Date.now();
       if (now - lastScrollTimeRef.current < scrollDelay) return;
 
       if (e.deltaY > 0) {
-        // Scroll down (wrap at end)
         setCurrentIndex((prev) => (prev + 1) % totalImages);
-        lastScrollTimeRef.current = now;
-      } else if (e.deltaY < 0) {
-        // Scroll up (clamp at start, no wrap)
+      } else {
         setCurrentIndex((prev) => prev - 1);
-        lastScrollTimeRef.current = now;
       }
+      lastScrollTimeRef.current = now;
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        const atCeiling = currentIndexRef.current === firstImageIndexRef.current;
-        const pressedUp = e.key === "ArrowUp";
+      if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
 
-        // At ceiling: require two deliberate up-presses to exit (with debounce)
-        if (atCeiling && pressedUp) {
-          const now = Date.now();
-          const timeSinceLastAttempt = now - lastCeilingAttemptTimeRef.current;
-          const debounceDelay = 300;
+      const atCeiling = currentIndexRef.current === firstImageIndexRef.current;
+      const pressedUp = e.key === "ArrowUp";
 
-          if (ceilingExitAttemptsRef.current === 0) {
-            // First attempt
-            ceilingExitAttemptsRef.current = 1;
-            lastCeilingAttemptTimeRef.current = now;
-            e.preventDefault();
-            return;
-          } else if (ceilingExitAttemptsRef.current === 1 && timeSinceLastAttempt >= debounceDelay) {
-            // Second deliberate attempt: allow action
-            return;
-          } else {
-            // Still within debounce window
-            e.preventDefault();
-            return;
-          }
-        }
+      // At first image pressing up — let page scroll, don't intercept
+      if (atCeiling && pressedUp) return;
 
-        // Reset exit attempts when pressing down or away from ceiling
-        if (pressedUp === false) {
-          ceilingExitAttemptsRef.current = 0;
-        }
+      e.preventDefault();
 
-        e.preventDefault();
+      const now = Date.now();
+      if (now - lastScrollTimeRef.current < scrollDelay) return;
 
-        const now = Date.now();
-        if (now - lastScrollTimeRef.current < scrollDelay) return;
-
-        if (e.key === "ArrowDown") {
-          setCurrentIndex((prev) => (prev + 1) % totalImages);
-        } else {
-          setCurrentIndex((prev) => prev - 1);
-        }
-        lastScrollTimeRef.current = now;
+      if (e.key === "ArrowDown") {
+        setCurrentIndex((prev) => (prev + 1) % totalImages);
+      } else {
+        setCurrentIndex((prev) => prev - 1);
       }
+      lastScrollTimeRef.current = now;
     };
 
     const handleTouchStart = (e: TouchEvent) => {
@@ -175,32 +113,10 @@ export default function LayeredGallery() {
       const atCeiling = currentIndexRef.current === firstImageIndexRef.current;
       const swipingDown = delta < 0;
 
-      // At ceiling: require two deliberate down-swipes to exit (with debounce)
+      // At first image swiping down — let page scroll, don't intercept
       if (atCeiling && swipingDown) {
-        const now = Date.now();
-        const timeSinceLastAttempt = now - lastCeilingAttemptTimeRef.current;
-        const debounceDelay = 300;
-
-        if (ceilingExitAttemptsRef.current === 0) {
-          // First attempt
-          ceilingExitAttemptsRef.current = 1;
-          lastCeilingAttemptTimeRef.current = now;
-          touchStartRef.current = null;
-          return;
-        } else if (ceilingExitAttemptsRef.current === 1 && timeSinceLastAttempt >= debounceDelay) {
-          // Second deliberate attempt: allow scroll to landing
-          touchStartRef.current = null;
-          return;
-        } else {
-          // Still within debounce window: block exit
-          touchStartRef.current = null;
-          return;
-        }
-      }
-
-      // Reset exit attempts when swiping up or away from ceiling
-      if (swipingDown === false) {
-        ceilingExitAttemptsRef.current = 0;
+        touchStartRef.current = null;
+        return;
       }
 
       const now = Date.now();
@@ -222,40 +138,19 @@ export default function LayeredGallery() {
       touchStartRef.current = null;
     };
 
-    let lastScrollY = window.scrollY;
-
-    const isAtPageBottom = (): boolean => {
-      // Lock only when user has scrolled near/to the bottom of the page
-      return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50;
-    };
-
-    const handleScroll = () => {
-      // Only lock scroll once user reaches the bottom of the page
-      const shouldLockScroll = isAtPageBottom();
-      const isCeiling = currentIndexRef.current === firstImageIndexRef.current;
-
-      if (shouldLockScroll && !isCeiling) {
-        // Revert scroll to maintain position in feed
-        window.scrollTo(0, lastScrollY);
-      } else {
-        // Allow scroll (either not at bottom yet, or at ceiling)
-        lastScrollY = window.scrollY;
-      }
-    };
-
-    const container = containerRef.current;
-    container?.addEventListener("wheel", handleWheel, { passive: false });
-    container?.addEventListener("touchstart", handleTouchStart, { passive: true });
-    container?.addEventListener("touchend", handleTouchEnd, { passive: true });
+    // wheel + touch → cardStack (cursor-targeted): navigation only fires when
+    // the cursor/touch lands on the stacked cards. keyboard → window.
+    const cardStack = cardStackRef.current;
+    cardStack?.addEventListener("wheel", handleWheel, { passive: false });
+    cardStack?.addEventListener("touchstart", handleTouchStart, { passive: true });
+    cardStack?.addEventListener("touchend", handleTouchEnd, { passive: true });
     window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("scroll", handleScroll);
 
     return () => {
-      container?.removeEventListener("wheel", handleWheel);
-      container?.removeEventListener("touchstart", handleTouchStart);
-      container?.removeEventListener("touchend", handleTouchEnd);
+      cardStack?.removeEventListener("wheel", handleWheel);
+      cardStack?.removeEventListener("touchstart", handleTouchStart);
+      cardStack?.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("scroll", handleScroll);
     };
   }, [totalImages]);
 
@@ -274,11 +169,32 @@ export default function LayeredGallery() {
         />
       </div>
 
+      {/* Preload window — hidden, slides with currentIndex */}
+      <div style={{ display: 'none' }} aria-hidden="true">
+        {Array.from({ length: PRELOAD_AHEAD + PRELOAD_BEHIND + 1 }, (_, i) => {
+          const idx = currentIndex - PRELOAD_BEHIND + i;
+          // Skip the 3 already-rendered card slots
+          if (idx < 0 || idx >= totalImages) return null;
+          if (idx >= currentIndex - 1 && idx <= currentIndex + 1) return null;
+          const img = allImages[idx];
+          return (
+            <Image
+              key={`preload-${img.id}`}
+              src={getImageUrl(img.src)}
+              alt=""
+              width={img.width}
+              height={img.height}
+              priority={false}
+            />
+          );
+        })}
+      </div>
+
       {/* Main gallery cards */}
-      <div className={styles.cardStack}>
+      <div className={styles.cardStack} ref={cardStackRef}>
         {displayedImages.map((image, layerIndex) => (
           <motion.div
-            key={`card-${layerIndex}-${image.id}`}
+            key={`card-slot-${layerIndex}`}
             className={`${styles.card} ${
               layerIndex === 1 ? styles.cardActive : ""
             }`}

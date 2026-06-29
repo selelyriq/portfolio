@@ -59,54 +59,60 @@ export default function ImageLightbox({
             onClick={onClose}
           />
 
-          {/* Lightbox container */}
+          {/* Lightbox container — click outside image to close */}
           <motion.div
             className={styles.lightbox}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3 }}
+            onClick={onClose}
           >
-            {/* Image — clickable to navigate to album */}
+            {/* Image container — stops propagation so clicking image doesn't close */}
             <div
               className={styles.imageContainer}
-              onClick={handleImageClick}
-              style={image.projectId ? { cursor: "pointer" } : undefined}
-              title={image.projectId ? "Click to view album" : undefined}
+              onClick={(e) => e.stopPropagation()}
             >
-              <Image
-                src={getImageUrl(image.src)}
-                alt={image.alt}
-                width={image.width}
-                height={image.height}
-                priority
-                className={styles.image}
-                sizes="90vw"
-              />
+              {/* Prev arrow — inside imageContainer, positioned left of it */}
+              <motion.button
+                className={`${styles.navButton} ${styles.prevButton}`}
+                onClick={(e) => { e.stopPropagation(); onPrev(); }}
+                disabled={disablePrev}
+                whileHover={!disablePrev ? { scale: 1.1 } : undefined}
+                whileTap={!disablePrev ? { scale: 0.95 } : undefined}
+                style={disablePrev ? { opacity: 0.3, cursor: "default" } : undefined}
+                aria-label="Previous image"
+              >
+                ‹
+              </motion.button>
+
+              <div
+                onClick={handleImageClick}
+                style={image.projectId ? { cursor: "pointer" } : undefined}
+                title={image.projectId ? "Click to view album" : undefined}
+              >
+                <Image
+                  src={getImageUrl(image.src)}
+                  alt={image.alt}
+                  width={image.width}
+                  height={image.height}
+                  priority
+                  className={styles.image}
+                  sizes="90vw"
+                />
+              </div>
+
+              {/* Next arrow — inside imageContainer, positioned right of it */}
+              <motion.button
+                className={`${styles.navButton} ${styles.nextButton}`}
+                onClick={(e) => { e.stopPropagation(); onNext(); }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                aria-label="Next image"
+              >
+                ›
+              </motion.button>
             </div>
-
-            {/* Navigation arrows */}
-            <motion.button
-              className={`${styles.navButton} ${styles.prevButton}`}
-              onClick={onPrev}
-              disabled={disablePrev}
-              whileHover={!disablePrev ? { scale: 1.1 } : undefined}
-              whileTap={!disablePrev ? { scale: 0.95 } : undefined}
-              style={disablePrev ? { opacity: 0.3, cursor: "default" } : undefined}
-              aria-label="Previous image"
-            >
-              ←
-            </motion.button>
-
-            <motion.button
-              className={`${styles.navButton} ${styles.nextButton}`}
-              onClick={onNext}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              aria-label="Next image"
-            >
-              →
-            </motion.button>
 
             {/* Image counter */}
             {totalImages > 0 && (
