@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import styles from "./header.module.css";
 
@@ -44,7 +45,14 @@ export default function Header() {
       <div className={styles.inner}>
         {/* Logo */}
         <Link href="/" className={styles.logo} onClick={handleLogoClick}>
-          <span className={styles.logoMain}>𝐿𝓎𝓇𝒾𝓆 𝒮𝑒𝓁𝑒</span>
+          <Image
+            src="/logo.png"
+            alt="Lyriq Sele"
+            height={36}
+            width={64}
+            className={styles.logoImage}
+            priority
+          />
         </Link>
 
         {/* Desktop nav */}

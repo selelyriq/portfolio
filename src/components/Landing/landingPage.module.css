@@ -181,3 +181,57 @@
     padding: 0.75rem;
   }
 }
+
+/* Name overlay */
+.nameOverlay {
+  position: fixed;
+  right: 8%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 1.2s ease;
+}
+
+.nameOverlayHidden {
+  opacity: 0;
+}
+
+.nameText {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+}
+
+/* Scroll indicator */
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.7; transform: rotate(90deg) translateX(0); }
+  50% { opacity: 0.2; transform: rotate(90deg) translateX(6px); }
+}
+
+.scrollIndicator {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.6s ease;
+}
+
+.scrollIndicatorHidden {
+  opacity: 0;
+}
+
+.scrollArrow {
+  display: block;
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+  animation: scrollPulse 2s ease-in-out infinite;
+  transform-origin: center;
+  line-height: 1;
+}

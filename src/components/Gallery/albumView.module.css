@@ -204,25 +204,21 @@
 /* Glow backdrop - only visible in fullscreen */
 .lightboxGlowBackdrop {
   position: fixed;
-  left: 50%;
-  top: 50%;
-  width: 900px;
-  height: 900px;
-  margin-left: -450px;
-  margin-top: -450px;
+  inset: 0;
   pointer-events: none;
   z-index: 999;
   opacity: 0.35;
-  filter: blur(50px);
+  filter: blur(80px);
   will-change: transform;
 }
 
 .glowBackdropImage {
   position: absolute;
-  left: 150px;
-  top: 150px;
+  left: 50%;
+  top: 50%;
   width: 600px;
   height: 600px;
+  transform: translate(-50%, -50%);
   object-fit: cover;
   display: block;
 }

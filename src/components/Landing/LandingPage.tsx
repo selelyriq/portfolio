@@ -100,6 +100,28 @@ export default function LandingPage() {
   const [middleInit] = useState(() => pickInitial(4));
   const [blurInit] = useState(() => pickInitial(10));
 
+  // Scroll indicator visibility: fades in after a short delay on mount,
+  // fades out once the landing section scrolls out of view.
+  const landingRef = useRef<HTMLDivElement>(null);
+  const [nameVisible, setNameVisible] = useState(false);
+  const [arrowReady, setArrowReady] = useState(false);
+  const [pastLanding, setPastLanding] = useState(false);
+  const arrowVisible = arrowReady && !pastLanding;
+
+  useEffect(() => {
+    const nameTimer = setTimeout(() => setNameVisible(true), 800);
+    const arrowTimer = setTimeout(() => setArrowReady(true), 1800);
+    return () => { clearTimeout(nameTimer); clearTimeout(arrowTimer); };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setPastLanding(window.scrollY > window.innerHeight * 0.75);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // Two-phase preload: gate cycling on the 24 initially-rendered images,
   // then background-load the rest of the pool with no gate.
   useEffect(() => {
@@ -140,8 +162,18 @@ export default function LandingPage() {
   const blurIndices = [1, 3, 5, 7, 9, 11, 13, 15, 17, 19];
 
   return (
-    <div className={styles.landing}>
+    <div className={styles.landing} ref={landingRef}>
       <ParticleField />
+
+      {/* Name overlay — right side, vertically centered */}
+      <div className={`${styles.nameOverlay}${nameVisible && !pastLanding ? '' : ` ${styles.nameOverlayHidden}`}`}>
+        <span className={styles.nameText}>𝐿𝓎𝓇𝒾𝓆 𝒮𝑒𝓁𝑒</span>
+      </div>
+
+      {/* Scroll indicator */}
+      <div className={`${styles.scrollIndicator}${arrowVisible ? '' : ` ${styles.scrollIndicatorHidden}`}`}>
+        <span className={styles.scrollArrow}>›</span>
+      </div>
 
       {/* Small middle layer */}
       <div className={styles.gridMiddle}>

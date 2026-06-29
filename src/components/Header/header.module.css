@@ -48,6 +48,13 @@
   display: none;
 }
 
+.logoImage {
+  height: 36px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
 /* Nav */
 .nav {
   display: flex;
