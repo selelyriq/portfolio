@@ -1,96 +1,104 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { highlightImages } from "@/data/highlights";
+import { galleryFeed } from "@/data/galleryFeed";
 import { getImageUrl } from "@/utils/imageLoader";
+import ImageLightbox from "@/components/Gallery/ImageLightbox";
 import styles from "./gallery.module.css";
 
-export default function Gallery() {
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+const BATCH_SIZE = 24;
 
-  const handlePrevious = () => {
-    if (selectedIndex === null) return;
-    setSelectedIndex(selectedIndex === 0 ? highlightImages.length - 1 : selectedIndex - 1);
-  };
+export default function Gallery() {
+  const [count, setCount] = useState(BATCH_SIZE);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  const visible = galleryFeed.slice(0, count);
+  const hasMore = count < galleryFeed.length;
+
+  const loadMore = useCallback(() => {
+    setCount((prev) => Math.min(prev + BATCH_SIZE, galleryFeed.length));
+  }, []);
+
+  useEffect(() => {
+    if (!hasMore) return;
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { rootMargin: "600px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loadMore]);
+
+  const handleClose = () => setSelectedIndex(null);
 
   const handleNext = () => {
-    if (selectedIndex === null) return;
-    setSelectedIndex(selectedIndex === highlightImages.length - 1 ? 0 : selectedIndex + 1);
+    setSelectedIndex((prev) =>
+      prev === null ? null : (prev + 1) % visible.length
+    );
+  };
+
+  const handlePrev = () => {
+    setSelectedIndex((prev) =>
+      prev === null ? null : (prev - 1 + visible.length) % visible.length
+    );
   };
 
   return (
-    <main className={styles.main}>
-      <div className={styles.container}>
+    <main className={styles.page}>
+      <header className={styles.header}>
         <h1 className={styles.title}>Gallery</h1>
-        <div className={styles.grid}>
-          {highlightImages.map((image, index) => (
-            <button
-              key={image.id || index}
-              className={styles.item}
-              onClick={() => setSelectedIndex(index)}
-              type="button"
-              aria-label={`View ${image.alt || `image ${index + 1}`}`}
-            >
-              <div className={styles.imageWrapper}>
-                <Image
-                  src={getImageUrl(image.src)}
-                  alt={image.alt || `Gallery image ${index + 1}`}
-                  width={600}
-                  height={400}
-                  className={styles.image}
-                  priority={index < 6}
-                  loading={index < 6 ? "eager" : "lazy"}
-                />
-              </div>
-            </button>
-          ))}
-        </div>
+        <p className={styles.subtitle}>{galleryFeed.length} PHOTOGRAPHS</p>
+      </header>
+
+      <div className={styles.masonry}>
+        {visible.map((image, index) => (
+          <button
+            key={image.id}
+            type="button"
+            className={styles.item}
+            onClick={() => setSelectedIndex(index)}
+            aria-label={`View photograph ${index + 1}`}
+          >
+            <Image
+              src={getImageUrl(image.src)}
+              alt={image.alt || `Gallery photograph ${index + 1}`}
+              width={image.width}
+              height={image.height}
+              className={styles.image}
+              loading="lazy"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            />
+          </button>
+        ))}
       </div>
 
-      {/* Lightbox */}
-      <AnimatePresence>
-        {selectedIndex !== null && (
-          <motion.div
-            className={styles.lightbox}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setSelectedIndex(null)}
-          >
-            <div className={styles.lightboxContent} onClick={(e) => e.stopPropagation()}>
-              <button
-                className={`${styles.navButton} ${styles.prevButton}`}
-                onClick={handlePrevious}
-                aria-label="Previous image"
-              >
-                ‹
-              </button>
+      {hasMore && (
+        <div ref={sentinelRef} className={styles.sentinel}>
+          <span className={styles.spinner} aria-hidden="true" />
+          <span className={styles.loadingText}>Loading…</span>
+        </div>
+      )}
 
-              <Image
-                src={getImageUrl(highlightImages[selectedIndex].src)}
-                alt={highlightImages[selectedIndex].alt || ""}
-                width={1200}
-                height={800}
-                className={styles.lightboxImage}
-              />
-
-              <button
-                className={`${styles.navButton} ${styles.nextButton}`}
-                onClick={handleNext}
-                aria-label="Next image"
-              >
-                ›
-              </button>
-            </div>
-
-            <div className={styles.counter} onClick={(e) => e.stopPropagation()}>
-              {selectedIndex + 1} / {highlightImages.length}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ImageLightbox
+        isOpen={selectedIndex !== null}
+        image={selectedIndex !== null ? visible[selectedIndex] : null}
+        onClose={handleClose}
+        onNext={handleNext}
+        onPrev={handlePrev}
+        disablePrev={selectedIndex === 0}
+        currentIndex={selectedIndex ?? 0}
+        totalImages={visible.length}
+      />
     </main>
   );
 }

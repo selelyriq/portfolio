@@ -54,25 +54,16 @@ export default function AlbumView({ project }: AlbumViewProps) {
               onClick={() => setSelectedIndex(index)}
               aria-label={`View ${image.alt || `image ${index + 1}`}`}
             >
-              {/* Blurred background glow */}
-              <div className={styles.glowBackground}>
-                <Image
-                  src={getImageUrl(image.src)}
-                  alt=""
-                  width={600}
-                  height={450}
-                  className={styles.glowImage}
-                  aria-hidden="true"
-                />
-              </div>
               {/* Main image */}
               <div className={styles.imageWrapper}>
                 <Image
                   src={getImageUrl(image.src)}
                   alt={image.alt || `Album image ${index + 1}`}
-                  width={600}
-                  height={450}
+                  width={image.width}
+                  height={image.height}
                   className={styles.image}
+                  loading={index < 9 ? "eager" : "lazy"}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               </div>
             </button>

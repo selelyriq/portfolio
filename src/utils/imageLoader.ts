@@ -11,5 +11,6 @@ export function flattenProjectsForGallery(projects: Project[]): Image[] {
 }
 
 export function getImageUrl(imagePath: string): string {
-  return `/images/${imagePath}`;
+  const encoded = imagePath.split('/').map(encodeURIComponent).join('/');
+  return `/images/${encoded}`;
 }
