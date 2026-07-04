@@ -96,9 +96,12 @@ function CyclingCell({ initialSrc, wrapperClassName, imgClassName, resolveSrc, m
 
 export default function LandingPage() {
   const [ready, setReady] = useState(false);
-  const [mainInit] = useState(() => pickInitial(10));
-  const [middleInit] = useState(() => pickInitial(4));
-  const [blurInit] = useState(() => pickInitial(10));
+  const preloadRefs = useRef<HTMLImageElement[]>([]);
+  // Deterministic initial values prevent SSR/client hydration mismatch.
+  // Randomized in useEffect (client-only) before ready=true makes images visible.
+  const [mainInit, setMainInit] = useState<string[]>(() => landingImages.slice(0, 10).map(img => img.src));
+  const [middleInit, setMiddleInit] = useState<string[]>(() => landingImages.slice(0, 4).map(img => img.src));
+  const [blurInit, setBlurInit] = useState<string[]>(() => landingImages.slice(0, 10).map(img => img.src));
 
   // Scroll indicator visibility: fades in after a short delay on mount,
   // fades out once the landing section scrolls out of view.
@@ -125,11 +128,19 @@ export default function LandingPage() {
   // Two-phase preload: gate cycling on the 24 initially-rendered images,
   // then background-load the rest of the pool with no gate.
   useEffect(() => {
+    // Randomize here (client-only) so SSR initial values stay deterministic.
+    const randomMain = pickInitial(10);
+    const randomMiddle = pickInitial(4);
+    const randomBlur = pickInitial(10);
+    setMainInit(randomMain);
+    setMiddleInit(randomMiddle);
+    setBlurInit(randomBlur);
+
     // The 24 URLs shown on screen immediately (main + middle use imgSrc, blur layer uses blurSrc)
     const priorityUrls = [
-      ...mainInit.map(imgSrc),
-      ...middleInit.map(imgSrc),
-      ...blurInit.map(blurSrc),
+      ...randomMain.map(imgSrc),
+      ...randomMiddle.map(imgSrc),
+      ...randomBlur.map(blurSrc),
     ];
     const prioritySet = new Set(priorityUrls);
 
@@ -142,9 +153,13 @@ export default function LandingPage() {
       }
     };
 
-    // Phase 1 — gate ready on the 24 rendered images
+    // Phase 1 — gate ready on the 24 rendered images.
+    // Keep refs to prevent iOS WebKit GC from collecting detached Image objects
+    // before onload fires (a known Safari quirk that silently drops callbacks).
+    const fallback = setTimeout(() => { if (!isReady) { isReady = true; setReady(true); } }, 4000);
     priorityUrls.forEach(url => {
       const img = new window.Image();
+      preloadRefs.current.push(img);
       img.onload = img.onerror = onPriorityLoad;
       img.src = url;
     });
@@ -156,6 +171,8 @@ export default function LandingPage() {
       if (!prioritySet.has(mainUrl)) { new window.Image().src = mainUrl; }
       if (!prioritySet.has(blurUrl)) { new window.Image().src = blurUrl; }
     });
+
+    return () => clearTimeout(fallback);
   }, []);
 
   const middleIndices = [1, 3, 5, 7];

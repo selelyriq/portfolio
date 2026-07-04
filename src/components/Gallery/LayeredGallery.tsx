@@ -23,14 +23,17 @@ export default function LayeredGallery() {
   const firstImageIndexRef = useRef(0);
   useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
-  const [allImages] = useState(() => {
-    const arr = [...galleryFeed];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
-  });
+  const [allImages, setAllImages] = useState<typeof galleryFeed>([...galleryFeed]);
+  useEffect(() => {
+    setAllImages(arr => {
+      const shuffled = [...arr];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    });
+  }, []);
   const totalImages = allImages.length;
 
   // Calculate which images to display (previous, current, next)

@@ -18,6 +18,18 @@ const nextConfig = {
   },
   compress: true,
   productionBrowserSourceMaps: false,
+  // Dev only: LAN devices (phone testing) must never reuse cached dev chunks.
+  // no-store disables conditional GETs (If-None-Match/If-Modified-Since) so
+  // every reload fetches fresh CSS/JS bytes. Not applied in production builds.
+  async headers() {
+    if (process.env.NODE_ENV === "production") return [];
+    return [
+      {
+        source: "/_next/static/:path*",
+        headers: [{ key: "Cache-Control", value: "no-store, must-revalidate" }],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

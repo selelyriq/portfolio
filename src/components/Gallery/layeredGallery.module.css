@@ -37,6 +37,9 @@
   flex-shrink: 0;
   margin-top: 100px;
   overscroll-behavior: contain;
+  /* Allow vertical swipe/scroll but let taps pass through to the card's
+     onClick without iOS treating them as gestures */
+  touch-action: pan-y;
 }
 
 .card {
@@ -44,6 +47,8 @@
   inset: 0;
   cursor: pointer;
   z-index: 3;
+  /* Remove the 300ms tap delay so iOS fires click reliably on tap */
+  touch-action: manipulation;
 }
 
 .card:nth-child(2) {
@@ -153,6 +158,37 @@
 
   .cardStack {
     width: 85vw;
+    /* touch-action: none lets our JS handler own all vertical swipes;
+       prevents iOS from consuming the gesture as native page scroll */
+    touch-action: none;
+  }
+
+  /* iOS: framer-motion animate (opacity/zIndex/transform) doesn't run, so
+     replicate the final animate state via CSS nth-child targeting.
+     DOM order: nth-child(1)=layerIndex0=previous, (2)=active, (3)=next */
+  .card {
+    opacity: 0.25 !important;
+    pointer-events: none;
+  }
+
+  .card:nth-child(1) {
+    z-index: 1 !important;
+    transform: translateY(-90px) scale(0.85) !important;
+  }
+
+  /* Active card slot — full opacity, on top, receives taps.
+     pointer-events: auto !important overrides framer-motion's inline
+     pointer-events: none (set automatically when opacity stays at 0) */
+  .card:nth-child(2) {
+    z-index: 3 !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
+  }
+
+  .card:nth-child(3) {
+    z-index: 2 !important;
+    transform: translateY(90px) scale(0.85) !important;
   }
 
   .info {

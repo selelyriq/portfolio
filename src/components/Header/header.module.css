@@ -135,6 +135,10 @@
   gap: 5px;
   padding: 0;
   flex-shrink: 0;
+  /* iOS tap reliability: remove tap highlight and avoid the 300ms
+     double-tap-zoom delay so the button responds immediately to taps */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .menuToggle span {
@@ -219,6 +223,8 @@
     text-decoration: none;
     border-bottom: 1px solid var(--border-color);
     transition: color 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .mobileNavLink:last-child {

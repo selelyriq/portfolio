@@ -165,19 +165,69 @@
 }
 
 @media (max-width: 768px) {
+  .landing {
+    padding-bottom: 4rem;
+    overflow: hidden;
+  }
+
+  .gridMiddle,
+  .gridBlur {
+    display: none;
+  }
+
+  /* 2-column grid centered on mobile. Desktop left-margin removed so cells
+     don't clip on the left edge. Row height auto so portrait diamonds fit. */
   .grid {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(8, 1fr);
-    gap: 1rem;
+    grid-template-rows: auto;
+    gap: 0.5rem;
+    row-gap: 2rem;
     padding: 1rem;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Portrait cells matching desktop's ~9:16 ratio (135:240).
+     85×150px → bounding box (85+150)×0.707 ≈ 166px per diamond,
+     2 columns × 166px + 16px gap + 32px padding = 380px < 390px.
+     Remove 3D context: iOS WebKit silently fails opacity animations
+     on children of preserve-3d containers. */
+  .cell {
+    width: 85px;
+    height: 150px;
+    perspective: none;
+    transform-style: flat;
+    justify-self: center;
+  }
+
+  /* iOS WebKit: framer-motion inline opacity stays at 0 (animation never
+     fires). !important forces photos visible regardless. */
+  .imageWrapper {
+    opacity: 1 !important;
+    transform: translateZ(0);
+  }
+
+  /* Scale desktop stagger proportionally (~60%):
+     desktop odd: bottom 32px, margin-right 15px
+     desktop even: top 15px, margin-left 20px */
+  .cell:nth-child(2n-1) {
+    bottom: 20px;
+    margin-right: 8px;
+  }
+
+  .cell:nth-child(2n) {
+    top: 10px;
+    margin-left: 12px;
   }
 }
 
 @media (max-width: 480px) {
+  /* Keep 2-column portrait diamond layout — same as 768px block.
+     Just tighten the gap slightly for narrower screens. */
   .grid {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(12, 1fr);
-    gap: 0.75rem;
+    gap: 0.25rem;
+    row-gap: 1.5rem;
     padding: 0.75rem;
   }
 }

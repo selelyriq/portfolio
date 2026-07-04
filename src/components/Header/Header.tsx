@@ -20,6 +20,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   function toggleMobile() {
+    console.log("[Header] toggleMobile fired, mobileOpen will become:", !mobileOpen);
     setMobileOpen((prev) => !prev);
   }
 
@@ -99,6 +100,7 @@ export default function Header() {
             (mobileOpen ? " " + styles.menuToggleOpen : "")
           }
           onClick={toggleMobile}
+          onTouchEnd={(e) => { e.preventDefault(); toggleMobile(); }}
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
           aria-expanded={mobileOpen}
         >
