@@ -1,11 +1,7 @@
 .about {
   width: 100%;
-  min-height: 100vh;
   background-color: var(--bg-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6rem 2rem;
+  padding: 0;
   opacity: 0;
   transform: translateY(32px);
   transition: opacity 0.9s ease, transform 0.9s ease;
@@ -17,7 +13,6 @@
 }
 
 .content {
-  max-width: 900px;
   width: 100%;
 }
 
@@ -32,4 +27,5 @@
   font-size: 1rem;
   text-align: center;
   opacity: 0.4;
+  padding: 6rem 2rem;
 }

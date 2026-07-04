@@ -21,8 +21,10 @@ export default function AboutSection() {
   return (
     <section className={`${styles.about} ${visible ? styles.visible : ""}`} id="about" ref={ref}>
       <div className={styles.content}>
-        {/* Replace with your graphic — e.g. <img src="/images/about-graphic.webp" className={styles.graphic} alt="" /> */}
-        <p className={styles.placeholder}>About coming soon.</p>
+        <picture>
+          <source srcSet="/images/about-me-mobile.jpg" media="(max-width: 768px)" />
+          <img src="/images/about-me-desktop.jpg" alt="About Lyriq Sele" className={styles.graphic} />
+        </picture>
       </div>
     </section>
   );
