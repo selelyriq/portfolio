@@ -21,16 +21,18 @@
 
 .imageContainer {
   position: relative;
-  max-width: min(50vw, 576px);
-  max-height: 54vh;
+  max-width: min(90vw, 960px);
+  max-height: 88vh;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .image {
-  width: 100%;
-  height: 100%;
+  max-width: min(90vw, 960px);
+  max-height: 88vh;
+  width: auto;
+  height: auto;
   object-fit: contain;
   display: block;
   border-radius: 8px;
@@ -84,19 +86,37 @@
 /* Mobile responsive */
 @media (max-width: 768px) {
   .lightbox {
-    padding: 1rem;
+    padding: 0;
   }
 
+  .imageContainer {
+    max-width: 100vw;
+    max-height: 100vh;
+  }
+
+  .image {
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  /* Arrows overlay inside the image on mobile — no room outside */
   .navButton {
-    font-size: 2rem;
+    font-size: 2.5rem;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   .prevButton {
-    left: -50px;
+    left: 12px;
   }
 
   .nextButton {
-    right: -50px;
+    right: 12px;
   }
 
   .counter {

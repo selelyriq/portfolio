@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -35,8 +36,22 @@ export default function ImageLightbox({
   totalImages = 0,
 }: ImageLightboxProps) {
   const router = useRouter();
+  const touchStartX = useRef<number | null>(null);
 
   if (!image) return null;
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0]?.clientX ?? null;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const delta = touchStartX.current - (e.changedTouches[0]?.clientX ?? 0);
+    if (Math.abs(delta) > 50) {
+      delta > 0 ? onNext() : (!disablePrev && onPrev());
+    }
+    touchStartX.current = null;
+  };
 
   const handleImageClick = () => {
     if (image.projectId) {
@@ -72,6 +87,8 @@ export default function ImageLightbox({
             <div
               className={styles.imageContainer}
               onClick={(e) => e.stopPropagation()}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
             >
               {/* Prev arrow — inside imageContainer, positioned left of it */}
               <motion.button
