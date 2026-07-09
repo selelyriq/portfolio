@@ -6,8 +6,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  overflow-x: clip;
   padding-bottom: 30vh;
+  z-index: 1;
 }
 
 .gridMiddle {
@@ -230,6 +231,52 @@
     row-gap: 1.5rem;
     padding: 0.75rem;
   }
+}
+
+/* Video cell */
+.videoFullscreenContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.videoElement {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* In fullscreen mode, the container fills the screen and centers the video */
+.videoFullscreenContainer:fullscreen,
+.videoFullscreenContainer:-webkit-full-screen {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.videoFullscreenContainer:fullscreen .videoElement,
+.videoFullscreenContainer:-webkit-full-screen .videoElement {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+/* Overlay sits on top and blocks all pointer events on the video itself */
+.videoOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+/* In fullscreen, hide the overlay so the browser's exit-fullscreen (Esc) still works,
+   but pointer-events: none keeps the video unclickable */
+.videoFullscreenContainer:fullscreen .videoOverlay,
+.videoFullscreenContainer:-webkit-full-screen .videoOverlay {
+  pointer-events: none;
 }
 
 /* Name overlay */

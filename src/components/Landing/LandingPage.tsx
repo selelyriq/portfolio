@@ -98,9 +98,10 @@ export default function LandingPage() {
   const [ready, setReady] = useState(false);
   const preloadRefs = useRef<HTMLImageElement[]>([]);
   // Deterministic initial values prevent SSR/client hydration mismatch.
+  // Non-overlapping slices ensure no duplicate photos across layers on first render.
   // Randomized in useEffect (client-only) before ready=true makes images visible.
   const [mainInit, setMainInit] = useState<string[]>(() => landingImages.slice(0, 10).map(img => img.src));
-  const [middleInit, setMiddleInit] = useState<string[]>(() => landingImages.slice(0, 4).map(img => img.src));
+  const [middleInit, setMiddleInit] = useState<string[]>(() => landingImages.slice(10, 14).map(img => img.src));
   const [blurInit, setBlurInit] = useState<string[]>(() => landingImages.slice(0, 10).map(img => img.src));
 
   // Scroll indicator visibility: fades in after a short delay on mount,
@@ -129,9 +130,11 @@ export default function LandingPage() {
   // then background-load the rest of the pool with no gate.
   useEffect(() => {
     // Randomize here (client-only) so SSR initial values stay deterministic.
-    const randomMain = pickInitial(10);
-    const randomMiddle = pickInitial(4);
-    const randomBlur = pickInitial(10);
+    // Pick main + middle from a single shared pool so no photo appears in both layers.
+    const randomMainAndMiddle = pickInitial(14);
+    const randomMain = randomMainAndMiddle.slice(0, 10);
+    const randomMiddle = randomMainAndMiddle.slice(10, 14);
+    const randomBlur = pickInitial(10); // blur layer is visually distinct (blurred), overlap fine
     setMainInit(randomMain);
     setMiddleInit(randomMiddle);
     setBlurInit(randomBlur);

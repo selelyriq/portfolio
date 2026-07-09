@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import styles from "./aboutSection.module.css";
 
 export default function AboutSection() {
@@ -20,11 +21,24 @@ export default function AboutSection() {
 
   return (
     <section className={`${styles.about} ${visible ? styles.visible : ""}`} id="about" ref={ref}>
-      <div className={styles.content}>
-        <picture>
-          <source srcSet="/images/about-me-mobile.jpg" media="(max-width: 768px)" />
-          <img src="/images/about-me-desktop.jpg" alt="About Lyriq Sele" className={styles.graphic} />
-        </picture>
+      <div className={styles.inner}>
+        <p className={styles.bio}>
+          For over five years I&apos;ve been doing photography. Started as a progression
+          from graphic design, turned it into my fulltime job for a few years. But ultimately
+          I find it way more fun purely as a hobby. So now I shoot for fun and work as a
+          Cloud Platform Engineer. This portfolio is what I&apos;ve considered some of my
+          greatest hits over the years.
+        </p>
+        <div className={styles.photoWrap}>
+          <Image
+            src="/images/about.jpg"
+            alt="Lyriq Sele"
+            width={1170}
+            height={1010}
+            className={styles.photo}
+            priority
+          />
+        </div>
       </div>
     </section>
   );

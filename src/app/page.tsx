@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import LandingPage from "@/components/Landing/LandingPage";
+import VideoSection from "@/components/Landing/VideoSection";
 import LayeredGallery from "@/components/Gallery/LayeredGallery";
 import AboutSection from "@/components/About/AboutSection";
 
@@ -12,6 +13,7 @@ export default function Home() {
   return (
     <main>
       <LandingPage />
+      <VideoSection />
       <LayeredGallery />
       <AboutSection />
     </main>

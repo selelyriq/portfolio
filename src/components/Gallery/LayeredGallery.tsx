@@ -158,7 +158,7 @@ export default function LayeredGallery() {
   }, [totalImages]);
 
   return (
-    <div className={styles.container} ref={containerRef}>
+    <div id="gallery-section" className={styles.container} ref={containerRef}>
       {/* Glow backdrop — rendered outside cardStack so it's not constrained by card stacking context */}
       <div className={styles.glowBackdrop}>
         <Image

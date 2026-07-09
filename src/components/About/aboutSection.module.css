@@ -1,10 +1,11 @@
 .about {
   width: 100%;
-  background-color: var(--bg-primary);
-  padding: 0;
+  background-color: #0a0a0a;
+  padding: 28rem 6rem 16rem;
   opacity: 0;
   transform: translateY(32px);
   transition: opacity 0.9s ease, transform 0.9s ease;
+  box-sizing: border-box;
 }
 
 .visible {
@@ -12,20 +13,54 @@
   transform: translateY(0);
 }
 
-.content {
-  width: 100%;
+.inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6rem;
 }
 
-.graphic {
+.bio {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 1.25rem;
+  line-height: 1.75;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.photoWrap {
+  flex-shrink: 0;
+  width: 380px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.6);
+}
+
+.photo {
   width: 100%;
   height: auto;
   display: block;
 }
 
-.placeholder {
-  color: var(--text-secondary);
-  font-size: 1rem;
-  text-align: center;
-  opacity: 0.4;
-  padding: 6rem 2rem;
+@media (max-width: 900px) {
+  .about {
+    padding: 5rem 2rem;
+  }
+
+  .inner {
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .photoWrap {
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .bio {
+    font-size: 1.1rem;
+  }
 }

@@ -29,10 +29,13 @@ export default function ThumbnailStrip({
 
   useEffect(() => {
     const handleScroll = () => {
-      // Hide strip until scrolled past landing (100vh) + transition (50vh)
       const scrolled = window.scrollY;
-      const hideThreshold = window.innerHeight * 1.5; // 150vh
-      setIsVisible(scrolled > hideThreshold);
+      const showThreshold = window.innerHeight * 2; // 200vh — past landing + video
+      const gallery = document.getElementById("gallery-section");
+      const galleryBottom = gallery
+        ? gallery.getBoundingClientRect().bottom + scrolled
+        : Infinity;
+      setIsVisible(scrolled > showThreshold && scrolled + window.innerHeight < galleryBottom + 80);
     };
 
     window.addEventListener("scroll", handleScroll);
