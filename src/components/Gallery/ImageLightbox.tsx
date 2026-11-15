@@ -53,47 +53,55 @@ export default function ImageLightbox({
     touchStartX.current = null;
   };
 
-  const handleImageClick = () => {
+  const handleImageClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (image.projectId) {
       onClose();
       router.push(`/album/${image.projectId}`);
     }
   };
 
+  // Close only when the click lands on the overlay itself (the empty area),
+  // never when it bubbles up from the content/buttons inside it.
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) onClose();
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop with frosted glass */}
+          {/* Backdrop — purely visual (blur + dark tint). Not interactive. */}
           <motion.div
             className={styles.backdrop}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            onClick={onClose}
           />
 
-          {/* Lightbox container — click outside image to close */}
+          {/* Lightbox — the top interactive overlay. Clicking its empty area
+              closes; clicks on the content/buttons are handled by those elements
+              and never reach onClose (target !== currentTarget). */}
           <motion.div
             className={styles.lightbox}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.3 }}
-            onClick={onClose}
+            onClick={handleOverlayClick}
           >
-            {/* Image container — stops propagation so clicking image doesn't close */}
             <div
-              className={styles.imageContainer}
-              onClick={(e) => e.stopPropagation()}
+              className={styles.contentRow}
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
-              {/* Prev arrow — inside imageContainer, positioned left of it */}
               <motion.button
-                className={`${styles.navButton} ${styles.prevButton}`}
-                onClick={(e) => { e.stopPropagation(); onPrev(); }}
+                className={styles.navButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPrev();
+                }}
                 disabled={disablePrev}
                 whileHover={!disablePrev ? { scale: 1.1 } : undefined}
                 whileTap={!disablePrev ? { scale: 0.95 } : undefined}
@@ -104,6 +112,7 @@ export default function ImageLightbox({
               </motion.button>
 
               <div
+                className={styles.imageContainer}
                 onClick={handleImageClick}
                 style={image.projectId ? { cursor: "pointer" } : undefined}
                 title={image.projectId ? "Click to view album" : undefined}
@@ -119,10 +128,12 @@ export default function ImageLightbox({
                 />
               </div>
 
-              {/* Next arrow — inside imageContainer, positioned right of it */}
               <motion.button
-                className={`${styles.navButton} ${styles.nextButton}`}
-                onClick={(e) => { e.stopPropagation(); onNext(); }}
+                className={styles.navButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onNext();
+                }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 aria-label="Next image"
@@ -131,7 +142,6 @@ export default function ImageLightbox({
               </motion.button>
             </div>
 
-            {/* Image counter */}
             {totalImages > 0 && (
               <div className={styles.counter}>
                 {currentIndex + 1} / {totalImages}
