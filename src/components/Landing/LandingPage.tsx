@@ -195,52 +195,55 @@ export default function LandingPage() {
         <span className={styles.scrollArrow}>›</span>
       </div>
 
-      {/* Small middle layer */}
-      <div className={styles.gridMiddle}>
-        {middleIndices.map((index, i) => (
-          <div key={`middle-${gridCells[index].id}`} className={styles.cellMiddle} style={{ rotate: '45deg' }}>
-            <CyclingCell
-              initialSrc={middleInit[i]}
-              wrapperClassName={styles.imageWrapperMiddle}
-              imgClassName={styles.imageMiddle}
-              resolveSrc={imgSrc}
-              maxOpacity={1}
-              ready={ready}
-            />
-          </div>
-        ))}
-      </div>
+      {/* Layer group — single flex item so all three layers share the same origin */}
+      <div className={styles.layerGroup}>
+        {/* Small middle layer */}
+        <div className={styles.gridMiddle}>
+          {middleIndices.map((index, i) => (
+            <div key={`middle-${gridCells[index].id}`} className={styles.cellMiddle} style={{ rotate: '45deg' }}>
+              <CyclingCell
+                initialSrc={middleInit[i]}
+                wrapperClassName={styles.imageWrapperMiddle}
+                imgClassName={styles.imageMiddle}
+                resolveSrc={imgSrc}
+                maxOpacity={1}
+                ready={ready}
+              />
+            </div>
+          ))}
+        </div>
 
-      {/* Blurred glow layer */}
-      <div className={styles.gridBlur}>
-        {blurIndices.map((index, i) => (
-          <div key={`blur-${gridCells[index].id}`} className={styles.cellBlur} style={{ rotate: '45deg' }}>
-            <CyclingCell
-              initialSrc={blurInit[i]}
-              wrapperClassName={styles.imageWrapperBlur}
-              imgClassName={styles.imageBlur}
-              resolveSrc={blurSrc}
-              maxOpacity={0.55}
-              ready={ready}
-            />
-          </div>
-        ))}
-      </div>
+        {/* Blurred glow layer */}
+        <div className={styles.gridBlur}>
+          {blurIndices.map((index, i) => (
+            <div key={`blur-${gridCells[index].id}`} className={styles.cellBlur} style={{ rotate: '45deg' }}>
+              <CyclingCell
+                initialSrc={blurInit[i]}
+                wrapperClassName={styles.imageWrapperBlur}
+                imgClassName={styles.imageBlur}
+                resolveSrc={blurSrc}
+                maxOpacity={0.55}
+                ready={ready}
+              />
+            </div>
+          ))}
+        </div>
 
-      {/* Main grid */}
-      <div className={styles.grid}>
-        {gridCells.slice(0, 10).map((cell, i) => (
-          <div key={cell.id} className={styles.cell} style={{ rotate: '45deg' }}>
-            <CyclingCell
-              initialSrc={mainInit[i]}
-              wrapperClassName={styles.imageWrapper}
-              imgClassName={styles.image}
-              resolveSrc={imgSrc}
-              maxOpacity={1}
-              ready={ready}
-            />
-          </div>
-        ))}
+        {/* Main grid */}
+        <div className={styles.grid}>
+          {gridCells.slice(0, 10).map((cell, i) => (
+            <div key={cell.id} className={styles.cell} style={{ rotate: '45deg' }}>
+              <CyclingCell
+                initialSrc={mainInit[i]}
+                wrapperClassName={styles.imageWrapper}
+                imgClassName={styles.image}
+                resolveSrc={imgSrc}
+                maxOpacity={1}
+                ready={ready}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
